@@ -1,0 +1,10 @@
+{
+  "name": "panini-tracker-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions para el Álbum Panini Mundial 2026",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "mongodb": "^6.3.0"
+  }
+}

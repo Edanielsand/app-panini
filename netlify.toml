@@ -1,0 +1,37 @@
+[build]
+  # Directorio raíz del proyecto
+  publish = "."
+  # Netlify instala dependencias automáticamente desde package.json raíz
+  command = "echo 'No build step needed'"
+
+[functions]
+  # Carpeta donde viven las Functions
+  directory = "netlify/functions"
+  # Node.js 18 (LTS estable, soporta ES modules parcialmente)
+  node_bundler = "esbuild"
+
+# Redirigir todo al index.html si la ruta no existe (SPA behavior)
+# No aplica aquí porque tenemos múltiples HTML, pero lo dejamos como seguridad
+[[redirects]]
+  from = "/app"
+  to   = "/album.html"
+  status = 200
+
+# Headers de seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+
+# Cache: archivos estáticos
+[[headers]]
+  for = "/api.js"
+  [headers.values]
+    Cache-Control = "no-store"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-store"

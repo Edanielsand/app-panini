@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Álbum Panini Mundial 2026 · Acceso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e27;
+    --bg-2: #131836;
+    --panel: #1a2049;
+    --panel-2: #232a5c;
+    --border: #2d3470;
+    --text: #f4f4f5;
+    --text-dim: #a8b0d6;
+    --text-muted: #6b73a8;
+    --accent: #ff3366;
+    --accent-2: #00d9a3;
+    --gold: #ffd43b;
+    --danger: #ef4444;
+    --radius: 14px;
+    --shadow: 0 10px 40px rgba(0,0,0,.35);
+    --shadow-lg: 0 25px 70px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Archivo', sans-serif;
+    background:
+      radial-gradient(ellipse at top right, rgba(255,51,102,.12), transparent 55%),
+      radial-gradient(ellipse at bottom left, rgba(0,217,163,.08), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+  }
+
+  /* Floating orbs decoration */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    opacity: 0.15;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .orb-1 { width: 400px; height: 400px; background: var(--accent); top: -100px; right: -100px; animation-delay: 0s; }
+  .orb-2 { width: 350px; height: 350px; background: var(--accent-2); bottom: -100px; left: -100px; animation-delay: -6s; }
+
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(30px, 20px) scale(1.05); }
+  }
+
+  /* Login card */
+  .login-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+    animation: slideUp .5s cubic-bezier(.4,0,.2,1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-card {
+    background: linear-gradient(160deg, var(--panel) 0%, var(--bg-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 36px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--gold));
+  }
+
+  /* Brand */
+  .login-brand {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .login-logo {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--accent), #ff6b9d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 16px;
+    box-shadow: 0 12px 32px rgba(255,51,102,.35);
+    position: relative;
+  }
+
+  .login-logo::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 2px solid rgba(255,255,255,.25);
+    border-radius: 13px;
+  }
+
+  .login-brand h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 1.5px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .login-brand p {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 600;
+  }
+
+  /* Form */
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  .input-wrap .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 16px;
+    pointer-events: none;
+  }
+
+  .form-group input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 13px 14px 13px 42px;
+    border-radius: 10px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 14px;
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+  }
+
+  .form-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255,51,102,.12);
+  }
+
+  .form-group input::placeholder {
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* Submit */
+  .btn-login {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #e62a5a);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .btn-login:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,51,102,.4);
+  }
+
+  .btn-login:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-login:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+
+  /* Spinner */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .btn-login.loading .spinner { display: block; }
+  .btn-login.loading .btn-text { opacity: .7; }
+
+  /* Error message */
+  .error-msg {
+    background: rgba(239,68,68,.1);
+    border: 1px solid rgba(239,68,68,.3);
+    border-left: 3px solid var(--danger);
+    color: #fca5a5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+    animation: fadeIn .3s ease;
+  }
+
+  .error-msg.show { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Footer */
+  .login-footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .login-footer span {
+    color: var(--accent-2);
+    font-weight: 700;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0;
+    position: relative;
+  }
+
+  .divider::after {
+    content: 'ACCESO RESTRINGIDO';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--panel);
+    padding: 0 12px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 460px) {
+    .login-card { padding: 30px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="login-wrapper">
+  <div class="login-card">
+
+    <div class="login-brand">
+      <div class="login-logo">⚽</div>
+      <h1>FIFA WORLD CUP 2026</h1>
+      <p>Álbum Panini · Colección</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="form-group">
+      <label>Correo electrónico</label>
+      <div class="input-wrap">
+        <span class="input-icon">✉</span>
+        <input
+          type="email"
+          id="emailInput"
+          placeholder="tu@correo.com"
+          autocomplete="email"
+          autofocus
+        >
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Contraseña</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔒</span>
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        >
+      </div>
+    </div>
+
+    <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+      <div class="spinner" id="loginSpinner"></div>
+      <span class="btn-text">INICIAR SESIÓN</span>
+    </button>
+
+    <div class="login-footer">
+      v2.0 · <span>Panini Tracker</span> · Solo usuarios autorizados
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { login, isAuthenticated } from './api.js';
+
+  // Si ya hay sesión activa, redirigir directamente
+  if (isAuthenticated()) {
+    window.location.replace('./album.html');
+  }
+
+  // Exponer handleLogin globalmente para el onclick del botón
+  window.handleLogin = async function () {
+    const email    = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    const btn      = document.getElementById('loginBtn');
+    const errorEl  = document.getElementById('errorMsg');
+
+    // Limpiar error anterior
+    errorEl.classList.remove('show');
+    errorEl.textContent = '';
+
+    // Validación básica
+    if (!email || !password) {
+      showError('Por favor ingresa tu correo y contraseña.');
+      return;
+    }
+
+    // Estado de carga
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+      await login(email, password);
+      // Redirigir al álbum
+      window.location.replace('./album.html');
+    } catch (err) {
+      showError(err.message || 'Error al iniciar sesión. Intenta de nuevo.');
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  };
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  // Enter para submit
+  document.getElementById('passwordInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') window.handleLogin();
+  });
+  document.getElementById('emailInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('passwordInput').focus();
+  });
+</script>
+
+</body>
+</html>

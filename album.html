@@ -1,0 +1,3325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Álbum Panini Mundial 2026 · Mi Colección</title>
+<script>
+  // Auth guard: redirigir al login si no hay token (antes de que cargue nada)
+  (function() {
+    if (!localStorage.getItem('panini_jwt')) {
+      window.location.replace('./index.html');
+    }
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+<style>
+  :root {
+    --bg: #0a0e27;
+    --bg-2: #131836;
+    --panel: #1a2049;
+    --panel-2: #232a5c;
+    --border: #2d3470;
+    --text: #f4f4f5;
+    --text-dim: #a8b0d6;
+    --text-muted: #6b73a8;
+    --accent: #ff3366;
+    --accent-2: #00d9a3;
+    --gold: #ffd43b;
+    --silver: #c0c5d4;
+    --bronze: #cd7f32;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --shadow: 0 10px 40px rgba(0,0,0,.35);
+    --shadow-lg: 0 25px 70px rgba(0,0,0,.5);
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Archivo', sans-serif;
+    background:
+      radial-gradient(ellipse at top right, rgba(255,51,102,.08), transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(0,217,163,.06), transparent 50%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), #ff6b9d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 8px 24px rgba(255,51,102,.4);
+    position: relative;
+  }
+
+  .brand-logo::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-radius: 10px;
+  }
+
+  .brand-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .brand-text p {
+    color: var(--text-dim);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 14px 20px;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all .2s;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn .3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* STATS GRID (DASHBOARD) */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .stat-card.success::before { background: var(--accent-2); }
+  .stat-card.gold::before { background: var(--gold); }
+  .stat-card.warning::before { background: var(--warning); }
+
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* PROGRESS */
+  .progress-section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .progress-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: .5px;
+  }
+
+  .progress-percent {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-2);
+  }
+
+  .progress-bar {
+    height: 14px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-2), #4ade80);
+    border-radius: 999px;
+    transition: width .6s cubic-bezier(.4,0,.2,1);
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* BUTTONS */
+  .btn {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .2s;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn:hover {
+    background: var(--border);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #e62a5a;
+    box-shadow: 0 6px 18px rgba(255,51,102,.4);
+  }
+
+  .btn-success {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+    color: var(--bg);
+  }
+
+  .btn-success:hover { background: #00b88a; }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+
+  .btn-danger:hover {
+    background: var(--danger);
+    color: white;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: var(--text-dim); }
+
+  .btn-sm { padding: 6px 12px; font-size: 11px; }
+
+  /* INDICADOR DE CAMBIOS SIN GUARDAR */
+  .btn-unsaved {
+    background: var(--warning) !important;
+    border-color: var(--warning) !important;
+    color: var(--bg) !important;
+    animation: pulse-warn 2s ease-in-out infinite;
+  }
+
+  .btn-unsaved:hover {
+    background: #d97706 !important;
+  }
+
+  @keyframes pulse-warn {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,.5); }
+    50% { box-shadow: 0 0 0 6px rgba(245,158,11,0); }
+  }
+
+  .unsaved-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--danger);
+    margin-left: 4px;
+    animation: dot-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(.8); }
+  }
+
+  /* FILTERS */
+  .filters {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px 10px 38px;
+    border-radius: 10px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 14px;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .search-box::before {
+    content: '🔍';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: .5;
+  }
+
+  select, input[type="text"], input[type="number"], input[type="date"] {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 14px;
+  }
+
+  select:focus, input:focus { outline: none; border-color: var(--accent); }
+
+  /* TEAM GRID */
+  .teams-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .teams-grid-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(135deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px 22px;
+    margin-top: 8px;
+  }
+
+  .group-header:first-child { margin-top: 0; }
+
+  .special-group-header {
+    border-left-color: var(--gold);
+  }
+
+  .group-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .group-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(255,51,102,.3);
+  }
+
+  .group-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+
+  .group-subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .group-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 160px;
+  }
+
+  .group-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+    min-width: 80px;
+  }
+
+  .group-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-2), #4ade80);
+    transition: width .4s;
+  }
+
+  .group-progress-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent-2);
+    min-width: 42px;
+    text-align: right;
+  }
+
+  .team-card-code {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--bg);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    letter-spacing: 1px;
+  }
+
+  .team-card.complete .team-card-code {
+    background: var(--accent-2);
+    color: var(--bg);
+    border-color: var(--accent-2);
+  }
+
+  .team-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    transition: all .2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .team-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+
+  .team-card.complete {
+    border-color: var(--accent-2);
+    background: linear-gradient(135deg, var(--panel) 0%, rgba(0,217,163,.08) 100%);
+  }
+
+  .team-card.complete::after {
+    content: '✓';
+    position: absolute;
+    top: 40px;
+    right: 12px;
+    background: var(--accent-2);
+    color: var(--bg);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 14px;
+  }
+
+  .team-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .team-flag {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3), inset 0 0 0 2px rgba(255,255,255,.15);
+    background: var(--bg);
+    position: relative;
+  }
+
+  .team-flag .fi {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    display: block;
+    border-radius: 0;
+  }
+
+  /* Bandera en el modal del equipo (más grande) */
+  .modal-flag {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,.4), inset 0 0 0 2px rgba(255,255,255,.2);
+    background: var(--bg);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 14px;
+  }
+
+  .modal-flag .fi {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    display: block;
+  }
+
+  /* Bandera pequeña en listas (intercambios, dashboard) */
+  .flag-sm {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.15);
+    background: var(--bg);
+  }
+
+  .flag-sm .fi {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    display: block;
+  }
+
+  .team-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: .5px;
+  }
+
+  .team-group {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+  }
+
+  .team-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .team-progress {
+    height: 6px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .team-progress-fill {
+    height: 100%;
+    background: var(--accent-2);
+    transition: width .4s;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .modal-overlay.active { display: flex; animation: fadeIn .2s; }
+
+  .modal {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp .3s cubic-bezier(.4,0,.2,1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: .5px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color .2s;
+  }
+
+  .modal-close:hover { color: var(--accent); }
+
+  /* STICKERS GRID */
+  .stickers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+  }
+
+  .sticker {
+    aspect-ratio: 3/4;
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .15s;
+    position: relative;
+    text-align: center;
+  }
+
+  .sticker:hover {
+    border-color: var(--accent);
+    transform: scale(1.04);
+  }
+
+  .sticker.owned {
+    background: linear-gradient(135deg, var(--accent-2), #00b88a);
+    border-color: var(--accent-2);
+    color: var(--bg);
+  }
+
+  .sticker.duplicate {
+    background: linear-gradient(135deg, var(--gold), #fab005);
+    border-color: var(--gold);
+    color: var(--bg);
+  }
+
+  .sticker-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .sticker-name {
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .sticker-count {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--bg);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 900;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--gold);
+  }
+
+  .sticker-legendary {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    color: var(--gold);
+    font-size: 12px;
+  }
+
+  /* TRANSACTIONS */
+  .transactions-list {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .transaction {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+
+  .transaction:last-child { border-bottom: none; }
+  .transaction:hover { background: var(--panel-2); }
+
+  .transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .transaction-info h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .transaction-info p {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .transaction-amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .transaction-amount.income { color: var(--accent-2); }
+  .transaction-amount.expense { color: var(--accent); }
+
+  /* FORM */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .form-field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  .form-field input, .form-field select {
+    width: 100%;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: .5;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  .badge-success { background: rgba(0,217,163,.15); color: var(--accent-2); }
+  .badge-warning { background: rgba(245,158,11,.15); color: var(--warning); }
+  .badge-danger { background: rgba(239,68,68,.15); color: var(--danger); }
+  .badge-gold { background: rgba(255,212,59,.15); color: var(--gold); }
+
+  /* TRADE LIST */
+  .trade-section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+
+  .trade-section h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .trade-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .trade-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .trade-item .num {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .trade-item.duplicate .num { color: var(--gold); }
+
+  /* CHART */
+  .chart-container {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+
+  .chart-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  .chart-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .chart-bar-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 80px;
+    gap: 12px;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .chart-bar-track {
+    height: 22px;
+    background: var(--bg);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .chart-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #ff6b9d);
+    transition: width .6s;
+    border-radius: 6px;
+  }
+
+  .chart-bar-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent-2);
+    padding: 14px 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    transform: translateX(120%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    max-width: 320px;
+  }
+
+  .toast.show { transform: translateX(0); }
+  .toast.error { border-left-color: var(--accent); }
+
+  /* HISTORICAL */
+  .insight-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .insight-card h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    margin-bottom: 10px;
+    letter-spacing: .5px;
+  }
+
+  .insight-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .insight-row:last-child { border-bottom: none; }
+  .insight-row .label { color: var(--text-dim); }
+  .insight-row .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .container { padding: 16px; }
+    .brand-text h1 { font-size: 24px; }
+    .stat-value { font-size: 30px; }
+    .modal { padding: 18px; }
+    .transaction { grid-template-columns: auto 1fr; gap: 10px; }
+    .transaction-amount, .transaction-actions { grid-column: span 2; justify-self: end; }
+    .chart-bar-row { grid-template-columns: 100px 1fr 60px; font-size: 11px; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* ── USER INFO (header) ─────────────────────────────── */
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-2), #4ade80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--bg);
+    flex-shrink: 0;
+  }
+
+  .user-name {
+    font-weight: 700;
+    color: var(--text);
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .btn-logout {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 5px 10px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-family: 'Archivo', sans-serif;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    transition: all .2s;
+  }
+
+  .btn-logout:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* ── CLOUD SAVE BUTTON ──────────────────────────────── */
+  .btn-cloud-save {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+    color: var(--bg);
+  }
+
+  .btn-cloud-save:hover { background: #00b88a; }
+
+  .btn-cloud-save.saving {
+    opacity: .7;
+    cursor: wait;
+    animation: pulse-save 1.2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-save {
+    0%, 100% { opacity: .7; }
+    50%       { opacity: 1; }
+  }
+
+  /* ── COMUNIDAD ──────────────────────────────────────── */
+  .community-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .community-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
+
+  /* Ranking de usuarios */
+  .ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .ranking-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .ranking-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .ranking-card.is-me {
+    border-color: var(--accent-2);
+    background: linear-gradient(135deg, var(--panel) 0%, rgba(0,217,163,.07) 100%);
+  }
+
+  .ranking-card.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(255,212,59,.2);
+  }
+
+  .rank-position {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1;
+  }
+
+  .rank-position.gold   { color: var(--gold); }
+  .rank-position.silver { color: var(--silver); }
+  .rank-position.bronze { color: var(--bronze); }
+
+  .rank-info { min-width: 0; }
+
+  .rank-name {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rank-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .rank-percent {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--accent-2);
+    line-height: 1;
+    text-align: right;
+  }
+
+  .rank-progress {
+    grid-column: 1 / -1;
+    height: 5px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: -6px;
+  }
+
+  .rank-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-2), #4ade80);
+    border-radius: 999px;
+    transition: width .6s;
+  }
+
+  /* Panel de comparación */
+  .compare-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .compare-panel.active { display: block; animation: fadeIn .3s ease; }
+
+  .compare-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .compare-panel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: .5px;
+  }
+
+  /* Cartas para intercambio */
+  .trade-match-section {
+    margin-top: 18px;
+  }
+
+  .trade-match-section h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    margin-bottom: 10px;
+    letter-spacing: .5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .compare-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .compare-stat {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .compare-stat .cs-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .compare-stat .cs-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .community-loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .community-loading .spinner-lg {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent-2);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .me-badge {
+    font-size: 10px;
+    background: rgba(0,217,163,.15);
+    color: var(--accent-2);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-family: 'Archivo', sans-serif;
+  }
+
+  /* Loading overlay inicial */
+  #appLoader {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    transition: opacity .4s;
+  }
+
+  #appLoader.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #appLoader .loader-logo {
+    font-size: 48px;
+    animation: bounce .8s ease-in-out infinite alternate;
+  }
+
+  #appLoader .loader-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+  }
+
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-12px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Loading overlay mientras se carga el álbum desde la nube -->
+<div id="appLoader">
+  <div class="loader-logo">⚽</div>
+  <div class="loader-text">Cargando tu colección...</div>
+</div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo">⚽</div>
+      <div class="brand-text">
+        <h1>FIFA WORLD CUP 2026</h1>
+        <p>Mi Álbum Panini · Tracker</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <span class="user-name" id="userName">...</span>
+        <button class="btn-logout" onclick="handleLogout()">Salir</button>
+      </div>
+      <button class="btn btn-cloud-save btn-sm" id="cloudSaveBtn" onclick="saveToCloud()">☁️ Guardar</button>
+      <button class="btn btn-danger btn-sm" onclick="resetAll()">🗑️ Reset</button>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
+    <button class="tab" data-tab="album">📖 Álbum</button>
+    <button class="tab" data-tab="finances">💰 Finanzas</button>
+    <button class="tab" data-tab="trades">🔄 Intercambios</button>
+    <button class="tab" data-tab="community">👥 Comunidad</button>
+    <button class="tab" data-tab="stats">📈 Estadísticas</button>
+    <button class="tab" data-tab="settings">⚙️ Configuración</button>
+  </nav>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="tab-content active" id="tab-dashboard">
+
+    <div class="stats-grid" id="dashboardStats"></div>
+
+    <div class="progress-section">
+      <div class="progress-header">
+        <div class="progress-title">Progreso del Álbum</div>
+        <div class="progress-percent" id="totalProgressPercent">0%</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="totalProgressFill" style="width: 0%"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
+        <span id="progressDetails">0 / 0 cartas</span>
+        <span id="progressRemaining">Faltan 0</span>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;" class="dashboard-cols">
+      <div class="insight-card">
+        <h4>⚡ Resumen Financiero</h4>
+        <div class="insight-row"><span class="label">Total invertido</span><span class="value" id="dashTotalInvested">$0</span></div>
+        <div class="insight-row"><span class="label">Cartas obtenidas</span><span class="value" id="dashTotalCards">0</span></div>
+        <div class="insight-row"><span class="label">Costo promedio/carta</span><span class="value" id="dashAvgCost">$0</span></div>
+        <div class="insight-row"><span class="label">Costo para completar</span><span class="value" id="dashCostToComplete">$0</span></div>
+      </div>
+
+      <div class="insight-card">
+        <h4>🏆 Top Equipos</h4>
+        <div id="topTeams"></div>
+      </div>
+    </div>
+
+    <div class="insight-card">
+      <h4>📰 Actividad Reciente</h4>
+      <div id="recentActivity"></div>
+    </div>
+
+  </section>
+
+  <!-- ============ ÁLBUM ============ -->
+  <section class="tab-content" id="tab-album">
+    <div class="filters">
+      <div class="search-box">
+        <input type="text" id="searchTeam" placeholder="Buscar por nombre, código (ej: JPN) o grupo...">
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Filtro</span>
+        <select id="filterStatus">
+          <option value="all">Todos</option>
+          <option value="incomplete">Incompletos</option>
+          <option value="complete">Completos</option>
+          <option value="empty">Sin iniciar</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Grupo</span>
+        <select id="filterGroup">
+          <option value="all">Todos los grupos</option>
+          <option value="A">Grupo A</option>
+          <option value="B">Grupo B</option>
+          <option value="C">Grupo C</option>
+          <option value="D">Grupo D</option>
+          <option value="E">Grupo E</option>
+          <option value="F">Grupo F</option>
+          <option value="G">Grupo G</option>
+          <option value="H">Grupo H</option>
+          <option value="I">Grupo I</option>
+          <option value="J">Grupo J</option>
+          <option value="K">Grupo K</option>
+          <option value="L">Grupo L</option>
+          <option value="ESP">⭐ Especiales</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="teams-grid" id="teamsGrid"></div>
+  </section>
+
+  <!-- ============ FINANZAS ============ -->
+  <section class="tab-content" id="tab-finances">
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Invertido</div>
+        <div class="stat-value" id="finTotalInvested">$0</div>
+        <div class="stat-sub" id="finTotalTx">0 transacciones</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-label">Sobres Comprados</div>
+        <div class="stat-value" id="finTotalPackets">0</div>
+        <div class="stat-sub" id="finAvgPacket">$0 promedio</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">Cartas por Dólar</div>
+        <div class="stat-value" id="finCardsPerDollar">0</div>
+        <div class="stat-sub">eficiencia</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-label">Este Mes</div>
+        <div class="stat-value" id="finThisMonth">$0</div>
+        <div class="stat-sub" id="finThisMonthCount">0 compras</div>
+      </div>
+    </div>
+
+    <div style="background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 20px;">
+      <h3 style="font-family: 'Bebas Neue'; font-size: 22px; margin-bottom: 16px;">➕ Registrar Nueva Compra</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Tipo</label>
+          <select id="purchaseType">
+            <option value="packet">Sobre</option>
+            <option value="box">Caja</option>
+            <option value="album">Álbum</option>
+            <option value="single">Carta individual</option>
+            <option value="other">Otro</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Cantidad</label>
+          <input type="number" id="purchaseQty" value="1" min="1">
+        </div>
+        <div class="form-field">
+          <label>Costo total ($)</label>
+          <input type="number" id="purchaseAmount" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-field">
+          <label>Cartas obtenidas</label>
+          <input type="number" id="purchaseCards" placeholder="0" min="0">
+        </div>
+        <div class="form-field">
+          <label>Fecha</label>
+          <input type="date" id="purchaseDate">
+        </div>
+        <div class="form-field">
+          <label>Lugar (opcional)</label>
+          <input type="text" id="purchaseStore" placeholder="Ej: Supermercado">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addPurchase()">💾 Registrar Compra</button>
+    </div>
+
+    <h3 style="font-family: 'Bebas Neue'; font-size: 22px; margin-bottom: 14px;">📋 Historial de Transacciones</h3>
+    <div class="transactions-list" id="transactionsList"></div>
+  </section>
+
+  <!-- ============ INTERCAMBIOS ============ -->
+  <section class="tab-content" id="tab-trades">
+    <div class="trade-section">
+      <h3>🟡 Tengo Repetidas <span class="badge badge-gold" id="duplicatesCount">0</span></h3>
+      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 14px;">
+        Cartas duplicadas listas para intercambiar
+      </p>
+      <div class="trade-items" id="duplicatesList">
+        <span style="color: var(--text-muted); font-size: 13px;">No tienes repetidas</span>
+      </div>
+    </div>
+
+    <div class="trade-section">
+      <h3>🔴 Me Faltan <span class="badge badge-danger" id="missingCount">0</span></h3>
+      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 14px;">
+        Cartas que aún no tienes
+      </p>
+      <div class="trade-items" id="missingList">
+        <span style="color: var(--text-muted); font-size: 13px;">No te falta ninguna 🎉</span>
+      </div>
+    </div>
+
+    <div class="trade-section">
+      <h3>📝 Generador de Listas</h3>
+      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 14px;">
+        Copia tu lista para compartir en grupos de intercambio
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
+        <button class="btn btn-primary btn-sm" onclick="generateTradeList('duplicates')">Generar repetidas</button>
+        <button class="btn btn-primary btn-sm" onclick="generateTradeList('missing')">Generar faltantes</button>
+        <button class="btn btn-primary btn-sm" onclick="generateTradeList('both')">Generar ambas</button>
+      </div>
+      <textarea id="tradeListOutput" readonly style="width:100%; min-height:150px; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; resize: vertical;" placeholder="Tu lista aparecerá aquí..."></textarea>
+      <button class="btn btn-ghost btn-sm" onclick="copyTradeList()" style="margin-top: 10px;">📋 Copiar al portapapeles</button>
+    </div>
+  </section>
+
+  <!-- ============ COMUNIDAD ============ -->
+  <section class="tab-content" id="tab-community">
+
+    <div class="community-header">
+      <h2>👥 Comunidad · Comparar Colecciones</h2>
+      <button class="btn btn-ghost btn-sm" onclick="loadCommunity()">🔄 Actualizar</button>
+    </div>
+
+    <!-- Ranking general -->
+    <div id="communityContent">
+      <div class="community-loading">
+        <div class="spinner-lg"></div>
+        Cargando colecciones de la comunidad...
+      </div>
+    </div>
+
+    <!-- Panel de comparación (aparece al seleccionar un usuario) -->
+    <div class="compare-panel" id="comparePanel">
+      <div class="compare-panel-header">
+        <div class="compare-panel-title" id="comparePanelTitle">Comparando con ...</div>
+        <button class="btn btn-ghost btn-sm" onclick="closeCompare()">✕ Cerrar</button>
+      </div>
+
+      <div class="compare-stats-grid" id="compareStatsGrid"></div>
+
+      <!-- Cartas que ellos tienen duplicadas y yo necesito (puedo pedirles) -->
+      <div class="trade-match-section">
+        <h4>🟡 Ellos tienen repetidas que a ti te faltan</h4>
+        <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 12px;">
+          Estas son las cartas que <strong id="theyHaveLabel">...</strong> tiene duplicadas y tú no tienes — puedes pedírselas.
+        </p>
+        <div class="trade-items" id="theyHaveDuplicatesINeed"></div>
+      </div>
+
+      <!-- Cartas que yo tengo duplicadas y ellos necesitan (puedo darles) -->
+      <div class="trade-match-section" style="margin-top: 22px;">
+        <h4>🔵 Tú tienes repetidas que a ellos les faltan</h4>
+        <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 12px;">
+          Estas son tus cartas duplicadas que <strong id="iHaveLabel">...</strong> no tiene — puedes ofrecérselas.
+        </p>
+        <div class="trade-items" id="iHaveDuplicatesTheyNeed"></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============ ESTADÍSTICAS ============ -->
+  <section class="tab-content" id="tab-stats">
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Día con más compras</div>
+        <div class="stat-value" id="statTopDay">-</div>
+        <div class="stat-sub" id="statTopDaySub">-</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-label">Sobres abiertos</div>
+        <div class="stat-value" id="statPacketsOpened">0</div>
+        <div class="stat-sub">total</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">Cartas/Sobre</div>
+        <div class="stat-value" id="statCardsPerPacket">0</div>
+        <div class="stat-sub">promedio</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-label">Tasa de duplicados</div>
+        <div class="stat-value" id="statDuplicateRate">0%</div>
+        <div class="stat-sub">de las obtenidas</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">📊 Progreso por Equipo</div>
+      <div class="chart-bars" id="teamProgressChart"></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">💸 Gastos por Mes</div>
+      <div class="chart-bars" id="monthlySpendChart"></div>
+    </div>
+
+    <div class="insight-card">
+      <h4>📅 Estimación de Finalización</h4>
+      <div class="insight-row"><span class="label">Ritmo actual</span><span class="value" id="estPace">- cartas/semana</span></div>
+      <div class="insight-row"><span class="label">Cartas faltantes</span><span class="value" id="estMissing">0</span></div>
+      <div class="insight-row"><span class="label">Tiempo estimado</span><span class="value" id="estTime">-</span></div>
+      <div class="insight-row"><span class="label">Costo estimado restante</span><span class="value" id="estCost">$0</span></div>
+    </div>
+  </section>
+
+  <!-- ============ CONFIGURACIÓN ============ -->
+  <section class="tab-content" id="tab-settings">
+    <div style="background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px;">
+      <h3 style="font-family: 'Bebas Neue'; font-size: 24px; margin-bottom: 18px;">⚙️ Ajustes del Álbum</h3>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Total de cartas en el álbum</label>
+          <input type="number" id="settingTotalStickers" min="1">
+        </div>
+        <div class="form-field">
+          <label>Moneda</label>
+          <select id="settingCurrency">
+            <option value="$">USD ($)</option>
+            <option value="€">EUR (€)</option>
+            <option value="MX$">MXN (MX$)</option>
+            <option value="AR$">ARS (AR$)</option>
+            <option value="CL$">CLP (CL$)</option>
+            <option value="COL$">COP (COL$)</option>
+            <option value="S/">PEN (S/)</option>
+            <option value="R$">BRL (R$)</option>
+            <option value="£">GBP (£)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Cartas por sobre</label>
+          <input type="number" id="settingCardsPerPacket" min="1" value="7">
+        </div>
+        <div class="form-field">
+          <label>Precio promedio por sobre</label>
+          <input type="number" id="settingPacketPrice" step="0.01" value="1">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Guardar Ajustes</button>
+    </div>
+
+    <div style="background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px;">
+      <h3 style="font-family: 'Bebas Neue'; font-size: 24px; margin-bottom: 14px;">ℹ️ Acerca de</h3>
+      <p style="color: var(--text-dim); font-size: 14px; line-height: 1.7;">
+        Tracker para tu álbum del FIFA World Cup 2026 de Panini. Los datos se guardan en la nube mediante MongoDB Atlas. El progreso local (borrador) se mantiene en localStorage hasta que pulses "☁️ Guardar".
+      </p>
+      <p style="color: var(--text-muted); font-size: 12px; margin-top: 14px; font-family: 'JetBrains Mono', monospace;">
+        v3.0 · Cloud sync · <span id="storageUsage">-</span>
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<!-- MODAL EQUIPO -->
+<div class="modal-overlay" id="teamModal" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTeamName">-</div>
+        <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-top: 4px;" id="modalTeamGroup">-</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
+      <button class="btn btn-success btn-sm" onclick="bulkMark('all')">✓ Marcar todas</button>
+      <button class="btn btn-ghost btn-sm" onclick="bulkMark('none')">✗ Desmarcar todas</button>
+    </div>
+    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+      💡 <strong>Click</strong> para marcar/desmarcar · <strong>Click derecho</strong> para añadir repetidas
+    </div>
+    <div class="stickers-grid" id="stickersGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { isAuthenticated, getCurrentUser, logout, loadAlbum, saveAlbum, getAllUsers } from './api.js';
+
+//=============================================================
+// AUTH GUARD
+//=============================================================
+if (!isAuthenticated()) {
+  window.location.replace('./index.html');
+}
+
+// Mostrar info del usuario en el header
+const currentUser = getCurrentUser();
+if (currentUser) {
+  const initial = (currentUser.displayName || currentUser.email || '?')[0].toUpperCase();
+  document.getElementById('userAvatar').textContent = initial;
+  document.getElementById('userName').textContent = currentUser.displayName || currentUser.email;
+}
+
+// Cerrar sesión
+window.handleLogout = function() {
+  if (!confirm('¿Deseas cerrar sesión?')) return;
+  logout();
+  window.location.replace('./index.html');
+};
+
+//=============================================================
+// DATOS BASE: EQUIPOS DEL MUNDIAL 2026
+//=============================================================
+// Total: 48 equipos clasificados al Mundial 2026 con grupos del sorteo oficial (5 diciembre 2025)
+// flagISO = código ISO 3166-1 alpha-2 (para flag-icons library)
+// code = código FIFA (el que aparece impreso en las cartas Panini)
+const TEAMS_DATA = [
+  // GRUPO A
+  { name: 'México', code: 'MEX', flagISO: 'mx', group: 'A', host: true },
+  { name: 'Sudáfrica', code: 'RSA', flagISO: 'za', group: 'A' },
+  { name: 'Corea del Sur', code: 'KOR', flagISO: 'kr', group: 'A' },
+  { name: 'República Checa', code: 'CZE', flagISO: 'cz', group: 'A' },
+  // GRUPO B
+  { name: 'Canadá', code: 'CAN', flagISO: 'ca', group: 'B', host: true },
+  { name: 'Bosnia y Herzegovina', code: 'BIH', flagISO: 'ba', group: 'B' },
+  { name: 'Catar', code: 'QAT', flagISO: 'qa', group: 'B' },
+  { name: 'Suiza', code: 'SUI', flagISO: 'ch', group: 'B' },
+  // GRUPO C
+  { name: 'Brasil', code: 'BRA', flagISO: 'br', group: 'C' },
+  { name: 'Marruecos', code: 'MAR', flagISO: 'ma', group: 'C' },
+  { name: 'Haití', code: 'HAI', flagISO: 'ht', group: 'C' },
+  { name: 'Escocia', code: 'SCO', flagISO: 'gb-sct', group: 'C' },
+  // GRUPO D
+  { name: 'Estados Unidos', code: 'USA', flagISO: 'us', group: 'D', host: true },
+  { name: 'Paraguay', code: 'PAR', flagISO: 'py', group: 'D' },
+  { name: 'Australia', code: 'AUS', flagISO: 'au', group: 'D' },
+  { name: 'Turquía', code: 'TUR', flagISO: 'tr', group: 'D' },
+  // GRUPO E
+  { name: 'Alemania', code: 'GER', flagISO: 'de', group: 'E' },
+  { name: 'Curazao', code: 'CUW', flagISO: 'cw', group: 'E' },
+  { name: 'Costa de Marfil', code: 'CIV', flagISO: 'ci', group: 'E' },
+  { name: 'Ecuador', code: 'ECU', flagISO: 'ec', group: 'E' },
+  // GRUPO F
+  { name: 'Países Bajos', code: 'NED', flagISO: 'nl', group: 'F' },
+  { name: 'Japón', code: 'JPN', flagISO: 'jp', group: 'F' },
+  { name: 'Suecia', code: 'SWE', flagISO: 'se', group: 'F' },
+  { name: 'Túnez', code: 'TUN', flagISO: 'tn', group: 'F' },
+  // GRUPO G
+  { name: 'Bélgica', code: 'BEL', flagISO: 'be', group: 'G' },
+  { name: 'Egipto', code: 'EGY', flagISO: 'eg', group: 'G' },
+  { name: 'Irán', code: 'IRN', flagISO: 'ir', group: 'G' },
+  { name: 'Nueva Zelanda', code: 'NZL', flagISO: 'nz', group: 'G' },
+  // GRUPO H
+  { name: 'España', code: 'ESP', flagISO: 'es', group: 'H' },
+  { name: 'Cabo Verde', code: 'CPV', flagISO: 'cv', group: 'H' },
+  { name: 'Arabia Saudita', code: 'KSA', flagISO: 'sa', group: 'H' },
+  { name: 'Uruguay', code: 'URU', flagISO: 'uy', group: 'H' },
+  // GRUPO I
+  { name: 'Francia', code: 'FRA', flagISO: 'fr', group: 'I' },
+  { name: 'Senegal', code: 'SEN', flagISO: 'sn', group: 'I' },
+  { name: 'Irak', code: 'IRQ', flagISO: 'iq', group: 'I' },
+  { name: 'Noruega', code: 'NOR', flagISO: 'no', group: 'I' },
+  // GRUPO J
+  { name: 'Argentina', code: 'ARG', flagISO: 'ar', group: 'J' },
+  { name: 'Argelia', code: 'ALG', flagISO: 'dz', group: 'J' },
+  { name: 'Austria', code: 'AUT', flagISO: 'at', group: 'J' },
+  { name: 'Jordania', code: 'JOR', flagISO: 'jo', group: 'J' },
+  // GRUPO K
+  { name: 'Portugal', code: 'POR', flagISO: 'pt', group: 'K' },
+  { name: 'R.D. del Congo', code: 'COD', flagISO: 'cd', group: 'K' },
+  { name: 'Uzbekistán', code: 'UZB', flagISO: 'uz', group: 'K' },
+  { name: 'Colombia', code: 'COL', flagISO: 'co', group: 'K' },
+  // GRUPO L
+  { name: 'Inglaterra', code: 'ENG', flagISO: 'gb-eng', group: 'L' },
+  { name: 'Croacia', code: 'CRO', flagISO: 'hr', group: 'L' },
+  { name: 'Ghana', code: 'GHA', flagISO: 'gh', group: 'L' },
+  { name: 'Panamá', code: 'PAN', flagISO: 'pa', group: 'L' },
+];
+
+// Cada equipo tiene 20 cartas: 1 escudo + 1 foto de equipo + 18 jugadores
+// (datos oficiales Panini FIFA World Cup 2026 - 980 stickers totales)
+const CARDS_PER_TEAM = 20;
+// Cartas especiales: 9 de Introducción + 11 del FIFA Museum (campeones pasados)
+const SPECIAL_CARDS_COUNT = 20;
+// Total oficial: 48*20 + 20 = 980 cartas
+const DEFAULT_TOTAL = TEAMS_DATA.length * CARDS_PER_TEAM + SPECIAL_CARDS_COUNT;
+
+//=============================================================
+// STATE & STORAGE
+//=============================================================
+const STORAGE_KEY = 'panini_wc2026_album_v1';
+
+let state = {
+  stickers: {},      // { "MEX-1": { owned: 1, duplicates: 0 }, ... }
+  transactions: [],  // [{ id, type, qty, amount, cards, date, store, createdAt }]
+  settings: {
+    totalStickers: DEFAULT_TOTAL,
+    currency: '$',
+    cardsPerPacket: 7,
+    packetPrice: 1
+  },
+  createdAt: Date.now()
+};
+
+function loadState() {
+  // Intentar cargar desde localStorage (borrador local)
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = { ...state, ...parsed };
+      if (!state.settings) state.settings = { totalStickers: DEFAULT_TOTAL, currency: '$', cardsPerPacket: 7, packetPrice: 1 };
+    }
+  } catch (e) {
+    console.error('Error loading local state:', e);
+  }
+}
+
+function saveState(skipUnsavedMark) {
+  try {
+    if (!skipUnsavedMark) {
+      state.hasUnsavedChanges = true;
+    }
+    // Guardar borrador local
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    updateStorageUsage();
+    if (!skipUnsavedMark) updateSaveIndicator();
+  } catch (e) {
+    showToast('Error al guardar borrador local', true);
+  }
+}
+
+// ─── Guardar en la nube (llamada explícita por botón) ─────────────────────────
+window.saveToCloud = async function() {
+  const btn = document.getElementById('cloudSaveBtn');
+  if (btn.classList.contains('saving')) return;
+
+  btn.classList.add('saving');
+  btn.textContent = '☁️ Guardando...';
+
+  try {
+    await saveAlbum(state);
+    state.hasUnsavedChanges = false;
+    state.lastSavedAt = Date.now();
+    saveState(true);  // actualizar borrador local sin remarcar unsaved
+    updateSaveIndicator();
+    showToast('✅ Guardado en la nube correctamente');
+  } catch (err) {
+    showToast('❌ Error al guardar: ' + err.message, true);
+  } finally {
+    btn.classList.remove('saving');
+    btn.textContent = '☁️ Guardar';
+  }
+};
+
+function updateStorageUsage() {
+  try {
+    const size = new Blob([JSON.stringify(state)]).size;
+    document.getElementById('storageUsage').textContent = (size / 1024).toFixed(2) + ' KB';
+  } catch(e) {}
+}
+
+//=============================================================
+// HELPERS
+//=============================================================
+const fmt = {
+  money(n) {
+    const cur = state.settings.currency || '$';
+    return cur + (Number(n) || 0).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  },
+  date(ts) {
+    return new Date(ts).toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
+  },
+  shortDate(ts) {
+    return new Date(ts).toLocaleDateString('es', { day: '2-digit', month: 'short' });
+  }
+};
+
+function getStickerKey(teamCode, num) { return `${teamCode}-${num}`; }
+
+function getSticker(teamCode, num) {
+  const key = getStickerKey(teamCode, num);
+  return state.stickers[key] || { owned: 0, duplicates: 0 };
+}
+
+// Renderizar bandera como logo circular (usa flag-icons CDN)
+function flagHTML(iso, size = 'team') {
+  if (!iso) return '<div class="team-flag"></div>';
+  const cls = size === 'sm' ? 'flag-sm' : size === 'modal' ? 'modal-flag' : 'team-flag';
+  return `<span class="${cls}"><span class="fi fi-${iso}"></span></span>`;
+}
+
+function setSticker(teamCode, num, data) {
+  const key = getStickerKey(teamCode, num);
+  if (data.owned <= 0 && data.duplicates <= 0) {
+    delete state.stickers[key];
+  } else {
+    state.stickers[key] = data;
+  }
+}
+
+function showToast(msg, isError = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => toast.classList.remove('show'), 2800);
+}
+
+//=============================================================
+// STATS COMPUTATION
+//=============================================================
+function computeStats() {
+  const total = state.settings.totalStickers;
+  let owned = 0, duplicates = 0, cardsTotal = 0;
+
+  for (const k in state.stickers) {
+    const s = state.stickers[k];
+    if (s.owned > 0) owned++;
+    duplicates += (s.duplicates || 0);
+    cardsTotal += (s.owned || 0) + (s.duplicates || 0);
+  }
+
+  const missing = total - owned;
+  const totalSpent = state.transactions.reduce((a, t) => a + Number(t.amount || 0), 0);
+  const totalCardsBought = state.transactions.reduce((a, t) => a + Number(t.cards || 0), 0);
+  const packets = state.transactions.filter(t => t.type === 'packet').reduce((a, t) => a + Number(t.qty || 0), 0);
+
+  // Costo para completar (estimado)
+  // Probabilidad simple: necesitamos `missing` cartas únicas, cada sobre tiene cardsPerPacket cartas.
+  // Aproximación coupon collector simplificada
+  const cardsPerPacket = state.settings.cardsPerPacket || 5;
+  const packetPrice = state.settings.packetPrice || 1;
+  let costToComplete = 0;
+  if (missing > 0 && total > 0) {
+    // Probabilidad de que una carta aleatoria sea nueva
+    let estimatedCardsNeeded = 0;
+    for (let i = 0; i < missing; i++) {
+      const probNew = (missing - i) / total;
+      estimatedCardsNeeded += 1 / probNew;
+    }
+    const packetsNeeded = Math.ceil(estimatedCardsNeeded / cardsPerPacket);
+    costToComplete = packetsNeeded * packetPrice;
+  }
+
+  return {
+    total, owned, duplicates, cardsTotal, missing,
+    percent: total ? (owned / total * 100) : 0,
+    totalSpent, totalCardsBought, packets,
+    avgCost: owned > 0 ? totalSpent / owned : 0,
+    cardsPerDollar: totalSpent > 0 ? totalCardsBought / totalSpent : 0,
+    avgPacket: packets > 0 ? state.transactions.filter(t => t.type === 'packet').reduce((a, t) => a + Number(t.amount || 0), 0) / packets : 0,
+    duplicateRate: totalCardsBought > 0 ? (duplicates / totalCardsBought * 100) : 0,
+    cardsPerPacketActual: packets > 0 ? totalCardsBought / packets : 0,
+    costToComplete
+  };
+}
+
+function getTeamStats(teamCode) {
+  let owned = 0, duplicates = 0;
+  for (let i = 1; i <= CARDS_PER_TEAM; i++) {
+    const s = getSticker(teamCode, i);
+    if (s.owned > 0) owned++;
+    duplicates += (s.duplicates || 0);
+  }
+  return { owned, duplicates, total: CARDS_PER_TEAM, percent: owned / CARDS_PER_TEAM * 100 };
+}
+
+//=============================================================
+// RENDER: DASHBOARD
+//=============================================================
+function renderDashboard() {
+  const s = computeStats();
+
+  const cur = state.settings.currency;
+  document.getElementById('dashboardStats').innerHTML = `
+    <div class="stat-card success">
+      <div class="stat-label">Progreso</div>
+      <div class="stat-value">${s.percent.toFixed(1)}%</div>
+      <div class="stat-sub">${s.owned} / ${s.total} cartas únicas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Dinero Invertido</div>
+      <div class="stat-value">${fmt.money(s.totalSpent)}</div>
+      <div class="stat-sub">${state.transactions.length} transacciones</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">Repetidas</div>
+      <div class="stat-value">${s.duplicates}</div>
+      <div class="stat-sub">para intercambiar</div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-label">Faltantes</div>
+      <div class="stat-value">${s.missing}</div>
+      <div class="stat-sub">cartas únicas</div>
+    </div>
+  `;
+
+  document.getElementById('totalProgressPercent').textContent = s.percent.toFixed(1) + '%';
+  document.getElementById('totalProgressFill').style.width = s.percent + '%';
+  document.getElementById('progressDetails').textContent = `${s.owned} / ${s.total} cartas`;
+  document.getElementById('progressRemaining').textContent = `Faltan ${s.missing}`;
+
+  document.getElementById('dashTotalInvested').textContent = fmt.money(s.totalSpent);
+  document.getElementById('dashTotalCards').textContent = s.cardsTotal;
+  document.getElementById('dashAvgCost').textContent = fmt.money(s.avgCost);
+  document.getElementById('dashCostToComplete').textContent = fmt.money(s.costToComplete);
+
+  // Top teams
+  const teamStats = TEAMS_DATA.map(t => ({ ...t, stats: getTeamStats(t.code) }))
+    .filter(t => t.stats.owned > 0)
+    .sort((a, b) => b.stats.percent - a.stats.percent)
+    .slice(0, 5);
+
+  if (teamStats.length === 0) {
+    document.getElementById('topTeams').innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">Aún no tienes cartas. Empieza a registrar tu progreso desde la pestaña Álbum.</div>';
+  } else {
+    document.getElementById('topTeams').innerHTML = teamStats.map(t => `
+      <div class="insight-row">
+        <span class="label">${flagHTML(t.flagISO, 'sm')}${t.name}</span>
+        <span class="value">${t.stats.owned}/${t.stats.total} · ${t.stats.percent.toFixed(0)}%</span>
+      </div>
+    `).join('');
+  }
+
+  // Recent activity
+  const recent = [...state.transactions].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
+  if (recent.length === 0) {
+    document.getElementById('recentActivity').innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">No hay actividad reciente. Registra tu primera compra desde la pestaña Finanzas.</div>';
+  } else {
+    document.getElementById('recentActivity').innerHTML = recent.map(t => `
+      <div class="insight-row">
+        <span class="label">${getTxIcon(t.type)} ${getTxLabel(t.type)} ${t.qty > 1 ? '×' + t.qty : ''}</span>
+        <span class="value">${fmt.money(t.amount)} · ${fmt.shortDate(t.createdAt)}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function getTxIcon(type) {
+  return { packet: '📦', box: '🎁', album: '📖', single: '🃏', other: '💵' }[type] || '💵';
+}
+
+function getTxLabel(type) {
+  return { packet: 'Sobre', box: 'Caja', album: 'Álbum', single: 'Carta', other: 'Otro' }[type] || 'Compra';
+}
+
+//=============================================================
+// RENDER: ÁLBUM
+//=============================================================
+let currentTeam = null;
+
+function renderAlbum() {
+  const search = document.getElementById('searchTeam').value.toLowerCase();
+  const filterStatus = document.getElementById('filterStatus').value;
+  const filterGroup = document.getElementById('filterGroup').value;
+
+  const grid = document.getElementById('teamsGrid');
+
+  let teams = TEAMS_DATA.filter(t => {
+    if (search) {
+      const s = search.toLowerCase();
+      const matchName = t.name.toLowerCase().includes(s);
+      const matchCode = t.code.toLowerCase().includes(s);
+      const matchGroup = t.group.toLowerCase().includes(s);
+      const matchGroupFull = ('grupo ' + t.group.toLowerCase()).includes(s);
+      if (!matchName && !matchCode && !matchGroup && !matchGroupFull) return false;
+    }
+    if (filterGroup !== 'all' && filterGroup !== 'ESP' && t.group !== filterGroup) return false;
+    const stats = getTeamStats(t.code);
+    if (filterStatus === 'complete' && stats.percent < 100) return false;
+    if (filterStatus === 'incomplete' && (stats.percent === 100 || stats.percent === 0)) return false;
+    if (filterStatus === 'empty' && stats.owned > 0) return false;
+    return true;
+  });
+
+  // Ordenar por grupo (A, B, C...) y dentro de cada grupo por nombre
+  teams.sort((a, b) => {
+    if (a.group !== b.group) return a.group.localeCompare(b.group);
+    // Anfitrión siempre primero dentro del grupo
+    if (a.host && !b.host) return -1;
+    if (!a.host && b.host) return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  // Special section
+  const showSpecials = filterGroup === 'all' || filterGroup === 'ESP';
+
+  // Agrupar por grupo con encabezados
+  let html = '';
+  let currentGroupRender = null;
+  teams.forEach(t => {
+    if (t.group !== currentGroupRender) {
+      // Cerrar grid anterior si existía
+      if (currentGroupRender !== null) html += '</div>';
+      currentGroupRender = t.group;
+      // Calcular progreso del grupo completo
+      const groupTeams = TEAMS_DATA.filter(x => x.group === t.group);
+      let groupOwned = 0, groupTotal = 0;
+      groupTeams.forEach(gt => {
+        const gs = getTeamStats(gt.code);
+        groupOwned += gs.owned;
+        groupTotal += gs.total;
+      });
+      const groupPct = groupTotal > 0 ? (groupOwned / groupTotal * 100) : 0;
+
+      html += `
+        <div class="group-header">
+          <div class="group-header-left">
+            <div class="group-badge">${t.group}</div>
+            <div>
+              <div class="group-title">Grupo ${t.group}</div>
+              <div class="group-subtitle">${groupTeams.length} equipos · ${groupOwned}/${groupTotal} cartas</div>
+            </div>
+          </div>
+          <div class="group-progress-wrap">
+            <div class="group-progress-bar"><div class="group-progress-fill" style="width: ${groupPct}%"></div></div>
+            <div class="group-progress-text">${groupPct.toFixed(0)}%</div>
+          </div>
+        </div>
+        <div class="teams-grid-inner">
+      `;
+    }
+    const stats = getTeamStats(t.code);
+    html += `
+      <div class="team-card ${stats.percent === 100 ? 'complete' : ''}" onclick="openTeam('${t.code}')">
+        <div class="team-card-code">${t.code}</div>
+        <div class="team-header">
+          ${flagHTML(t.flagISO)}
+          <div>
+            <div class="team-name">${t.name}</div>
+            <div class="team-group">Grupo ${t.group}${t.host ? ' · Anfitrión' : ''}</div>
+          </div>
+        </div>
+        <div class="team-stats">
+          <span>${stats.owned}/${stats.total}</span>
+          <span style="color: var(--gold);">${stats.duplicates} repe.</span>
+          <span style="color: var(--accent-2);">${stats.percent.toFixed(0)}%</span>
+        </div>
+        <div class="team-progress">
+          <div class="team-progress-fill" style="width: ${stats.percent}%"></div>
+        </div>
+      </div>
+    `;
+  });
+  if (currentGroupRender !== null) html += '</div>';
+
+  // Cartas especiales como "equipo" virtual
+  if (showSpecials && (!search || 'especiales'.includes(search) || 'special'.includes(search) || 'esp'.includes(search))) {
+    let ownedSp = 0, dupSp = 0;
+    for (let i = 1; i <= SPECIAL_CARDS_COUNT; i++) {
+      const s = getSticker('SPECIAL', i);
+      if (s.owned > 0) ownedSp++;
+      dupSp += (s.duplicates || 0);
+    }
+    const pctSp = (ownedSp / SPECIAL_CARDS_COUNT * 100);
+
+    const passStatusFilter = (
+      (filterStatus === 'all') ||
+      (filterStatus === 'complete' && pctSp === 100) ||
+      (filterStatus === 'incomplete' && pctSp > 0 && pctSp < 100) ||
+      (filterStatus === 'empty' && ownedSp === 0)
+    );
+
+    if (passStatusFilter) {
+      html = `
+        <div class="group-header special-group-header">
+          <div class="group-header-left">
+            <div class="group-badge" style="background: var(--gold); color: var(--bg);">★</div>
+            <div>
+              <div class="group-title">Cartas Especiales</div>
+              <div class="group-subtitle">${SPECIAL_CARDS_COUNT} cartas · ${ownedSp}/${SPECIAL_CARDS_COUNT}</div>
+            </div>
+          </div>
+          <div class="group-progress-wrap">
+            <div class="group-progress-bar"><div class="group-progress-fill" style="width: ${pctSp}%; background: var(--gold);"></div></div>
+            <div class="group-progress-text" style="color: var(--gold);">${pctSp.toFixed(0)}%</div>
+          </div>
+        </div>
+        <div class="teams-grid-inner">
+          <div class="team-card ${pctSp === 100 ? 'complete' : ''}" onclick="openTeam('SPECIAL')" style="border-color: var(--gold); background: linear-gradient(135deg, var(--panel) 0%, rgba(255,212,59,.08) 100%);">
+            <div class="team-card-code" style="background: var(--gold); color: var(--bg);">ESP</div>
+            <div class="team-header">
+              <div class="team-flag" style="display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, var(--gold), #fab005);">⭐</div>
+              <div>
+                <div class="team-name">Cartas Especiales</div>
+                <div class="team-group" style="color: var(--gold);">9 Introducción · 11 FIFA Museum</div>
+              </div>
+            </div>
+            <div class="team-stats">
+              <span>${ownedSp}/${SPECIAL_CARDS_COUNT}</span>
+              <span style="color: var(--gold);">${dupSp} repe.</span>
+              <span style="color: var(--accent-2);">${pctSp.toFixed(0)}%</span>
+            </div>
+            <div class="team-progress">
+              <div class="team-progress-fill" style="width: ${pctSp}%; background: var(--gold);"></div>
+            </div>
+          </div>
+        </div>
+      ` + html;
+    }
+  }
+
+  if (!html) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-state-icon">🔍</div>No se encontraron equipos con esos filtros</div>';
+  } else {
+    grid.innerHTML = html;
+  }
+}
+
+function openTeam(code) {
+  currentTeam = code;
+  const isSpecial = code === 'SPECIAL';
+  const team = isSpecial
+    ? { name: 'Cartas Especiales', flagISO: null, group: '9 Introducción + 11 FIFA Museum' }
+    : TEAMS_DATA.find(t => t.code === code);
+
+  const flagDisplay = isSpecial
+    ? '<span class="modal-flag" style="display: inline-flex; align-items: center; justify-content: center; font-size: 32px; background: linear-gradient(135deg, var(--gold), #fab005);">⭐</span>'
+    : flagHTML(team.flagISO, 'modal');
+
+  document.getElementById('modalTeamName').innerHTML = `${flagDisplay}<span style="vertical-align: middle;">${team.name}</span>`;
+  document.getElementById('modalTeamGroup').textContent = isSpecial ? team.group : `Grupo ${team.group}${team.host ? ' · Anfitrión' : ''} · Código: ${team.code}`;
+
+  renderStickers();
+  document.getElementById('teamModal').classList.add('active');
+}
+
+function renderStickers() {
+  const isSpecial = currentTeam === 'SPECIAL';
+  const total = isSpecial ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
+  const grid = document.getElementById('stickersGrid');
+  const code = currentTeam;
+
+  let html = '';
+  for (let i = 1; i <= total; i++) {
+    const s = getSticker(code, i);
+    const isOwned = s.owned > 0;
+    const hasDup = (s.duplicates || 0) > 0;
+    const isLegendary = isSpecial && (i >= 10); // FIFA Museum (campeones del pasado) marcadas como legendarias
+
+    let label;
+    if (isSpecial) {
+      // 9 cartas de Introducción + 11 del FIFA Museum (campeones pasados)
+      if (i <= 9) label = `Intro ${i}`;
+      else label = `FIFA Museum ${i-9}`;
+    } else {
+      // 20 cartas por equipo: 1 escudo (foil) + 1 foto del equipo + 18 jugadores
+      if (i === 1) label = 'Escudo';
+      else if (i === 2) label = 'Plantilla';
+      else label = `Jugador ${i-2}`;
+    }
+
+    html += `
+      <div class="sticker ${isOwned ? (hasDup ? 'duplicate' : 'owned') : ''}"
+           onclick="toggleSticker('${code}', ${i})"
+           oncontextmenu="event.preventDefault(); addDuplicate('${code}', ${i})">
+        ${isLegendary ? '<span class="sticker-legendary">★</span>' : ''}
+        ${hasDup ? `<span class="sticker-count">+${s.duplicates}</span>` : ''}
+        <div class="sticker-number">${i}</div>
+        <div class="sticker-name">${label}</div>
+      </div>
+    `;
+  }
+  grid.innerHTML = html;
+}
+
+function toggleSticker(code, num) {
+  const s = getSticker(code, num);
+  if (s.owned > 0) {
+    setSticker(code, num, { owned: 0, duplicates: 0 });
+  } else {
+    setSticker(code, num, { owned: 1, duplicates: 0 });
+  }
+  saveState();
+  renderStickers();
+  renderAlbum();
+  renderDashboard();
+}
+
+function addDuplicate(code, num) {
+  const s = getSticker(code, num);
+  if (s.owned === 0) {
+    setSticker(code, num, { owned: 1, duplicates: 0 });
+    showToast('Carta marcada como obtenida');
+  } else {
+    setSticker(code, num, { owned: 1, duplicates: (s.duplicates || 0) + 1 });
+    showToast(`Repetida #${(s.duplicates || 0) + 1} añadida`);
+  }
+  saveState();
+  renderStickers();
+  renderAlbum();
+  renderDashboard();
+}
+
+function bulkMark(action) {
+  const isSpecial = currentTeam === 'SPECIAL';
+  const total = isSpecial ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
+  for (let i = 1; i <= total; i++) {
+    if (action === 'all') {
+      const s = getSticker(currentTeam, i);
+      if (s.owned === 0) setSticker(currentTeam, i, { owned: 1, duplicates: 0 });
+    } else {
+      setSticker(currentTeam, i, { owned: 0, duplicates: 0 });
+    }
+  }
+  saveState();
+  renderStickers();
+  renderAlbum();
+  renderDashboard();
+  showToast(action === 'all' ? 'Todas marcadas como obtenidas' : 'Todas desmarcadas');
+}
+
+function closeModal() {
+  document.getElementById('teamModal').classList.remove('active');
+  currentTeam = null;
+}
+
+//=============================================================
+// RENDER: FINANCES
+//=============================================================
+function renderFinances() {
+  const s = computeStats();
+  const cur = state.settings.currency;
+
+  document.getElementById('finTotalInvested').textContent = fmt.money(s.totalSpent);
+  document.getElementById('finTotalTx').textContent = `${state.transactions.length} transacciones`;
+  document.getElementById('finTotalPackets').textContent = s.packets;
+  document.getElementById('finAvgPacket').textContent = `${fmt.money(s.avgPacket)} promedio`;
+  document.getElementById('finCardsPerDollar').textContent = s.cardsPerDollar.toFixed(2);
+
+  // This month
+  const now = new Date();
+  const thisMonthTx = state.transactions.filter(t => {
+    const d = new Date(t.createdAt);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  const thisMonthTotal = thisMonthTx.reduce((a, t) => a + Number(t.amount || 0), 0);
+  document.getElementById('finThisMonth').textContent = fmt.money(thisMonthTotal);
+  document.getElementById('finThisMonthCount').textContent = `${thisMonthTx.length} compras`;
+
+  // Transaction list
+  const list = document.getElementById('transactionsList');
+  const sorted = [...state.transactions].sort((a, b) => b.createdAt - a.createdAt);
+  if (sorted.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div>No hay transacciones registradas todavía</div>';
+    return;
+  }
+
+  list.innerHTML = sorted.map(t => `
+    <div class="transaction">
+      <div class="transaction-icon">${getTxIcon(t.type)}</div>
+      <div class="transaction-info">
+        <h4>${getTxLabel(t.type)} ${t.qty > 1 ? '× ' + t.qty : ''} ${t.cards ? '· ' + t.cards + ' cartas' : ''}</h4>
+        <p>${fmt.date(t.createdAt)}${t.store ? ' · ' + t.store : ''}</p>
+      </div>
+      <div class="transaction-amount expense">-${fmt.money(t.amount)}</div>
+      <div class="transaction-actions">
+        <button class="btn btn-danger btn-sm" onclick="deleteTransaction('${t.id}')">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addPurchase() {
+  const type = document.getElementById('purchaseType').value;
+  const qty = parseInt(document.getElementById('purchaseQty').value) || 1;
+  const amount = parseFloat(document.getElementById('purchaseAmount').value);
+  const cards = parseInt(document.getElementById('purchaseCards').value) || 0;
+  const dateStr = document.getElementById('purchaseDate').value;
+  const store = document.getElementById('purchaseStore').value.trim();
+
+  if (!amount || amount <= 0) {
+    showToast('Ingresa un monto válido', true);
+    return;
+  }
+
+  const createdAt = dateStr ? new Date(dateStr).getTime() : Date.now();
+
+  state.transactions.push({
+    id: 'tx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    type, qty, amount, cards, store,
+    createdAt
+  });
+
+  saveState();
+  renderAll();
+  showToast('Compra registrada correctamente');
+
+  // Reset form
+  document.getElementById('purchaseAmount').value = '';
+  document.getElementById('purchaseCards').value = '';
+  document.getElementById('purchaseStore').value = '';
+  document.getElementById('purchaseQty').value = '1';
+}
+
+function deleteTransaction(id) {
+  if (!confirm('¿Eliminar esta transacción?')) return;
+  state.transactions = state.transactions.filter(t => t.id !== id);
+  saveState();
+  renderAll();
+  showToast('Transacción eliminada');
+}
+
+//=============================================================
+// RENDER: TRADES
+//=============================================================
+function renderTrades() {
+  const duplicates = [];
+  const missing = [];
+
+  // Equipos
+  TEAMS_DATA.forEach(t => {
+    for (let i = 1; i <= CARDS_PER_TEAM; i++) {
+      const s = getSticker(t.code, i);
+      if ((s.duplicates || 0) > 0) {
+        duplicates.push({ code: t.code, num: i, count: s.duplicates, team: t.name, flagISO: t.flagISO });
+      }
+      if ((s.owned || 0) === 0) {
+        missing.push({ code: t.code, num: i, team: t.name, flagISO: t.flagISO });
+      }
+    }
+  });
+
+  // Especiales
+  for (let i = 1; i <= SPECIAL_CARDS_COUNT; i++) {
+    const s = getSticker('SPECIAL', i);
+    if ((s.duplicates || 0) > 0) {
+      duplicates.push({ code: 'SPECIAL', num: i, count: s.duplicates, team: 'Especial', flag: '⭐' });
+    }
+    if ((s.owned || 0) === 0) {
+      missing.push({ code: 'SPECIAL', num: i, team: 'Especial', flag: '⭐' });
+    }
+  }
+
+  document.getElementById('duplicatesCount').textContent = duplicates.length;
+  document.getElementById('missingCount').textContent = missing.length;
+
+  const dupEl = document.getElementById('duplicatesList');
+  if (duplicates.length === 0) {
+    dupEl.innerHTML = '<span style="color: var(--text-muted); font-size: 13px;">No tienes repetidas</span>';
+  } else {
+    dupEl.innerHTML = duplicates.map(d => `
+      <div class="trade-item duplicate" title="${d.team} - Carta ${d.num}">
+        ${flagHTML(d.flagISO, 'sm')}<span class="num">${d.code}-${d.num}</span> ×${d.count}
+      </div>
+    `).join('');
+  }
+
+  const missEl = document.getElementById('missingList');
+  if (missing.length === 0) {
+    missEl.innerHTML = '<span style="color: var(--text-muted); font-size: 13px;">🎉 ¡Álbum completo! No te falta ninguna</span>';
+  } else {
+    missEl.innerHTML = missing.slice(0, 200).map(m => `
+      <div class="trade-item" title="${m.team} - Carta ${m.num}">
+        ${flagHTML(m.flagISO, 'sm')}<span class="num">${m.code}-${m.num}</span>
+      </div>
+    `).join('') + (missing.length > 200 ? `<span style="color: var(--text-muted); font-size: 13px; padding: 8px;">...y ${missing.length - 200} más</span>` : '');
+  }
+}
+
+function generateTradeList(type) {
+  let output = `🎯 ÁLBUM FIFA WORLD CUP 2026 - PANINI\n`;
+  output += `📅 ${new Date().toLocaleDateString('es', { day: '2-digit', month: 'long', year: 'numeric' })}\n`;
+  output += `${'='.repeat(40)}\n\n`;
+
+  if (type === 'duplicates' || type === 'both') {
+    output += `🟡 CAMBIO (Repetidas):\n`;
+    const dups = [];
+    TEAMS_DATA.forEach(t => {
+      for (let i = 1; i <= CARDS_PER_TEAM; i++) {
+        const s = getSticker(t.code, i);
+        if ((s.duplicates || 0) > 0) {
+          dups.push(`${t.code}-${i}${s.duplicates > 1 ? ' x'+s.duplicates : ''}`);
+        }
+      }
+    });
+    for (let i = 1; i <= SPECIAL_CARDS_COUNT; i++) {
+      const s = getSticker('SPECIAL', i);
+      if ((s.duplicates || 0) > 0) dups.push(`E-${i}${s.duplicates > 1 ? ' x'+s.duplicates : ''}`);
+    }
+    output += dups.length ? dups.join(', ') : 'Ninguna';
+    output += `\n\n`;
+  }
+
+  if (type === 'missing' || type === 'both') {
+    output += `🔴 NECESITO (Faltantes):\n`;
+    const miss = [];
+    TEAMS_DATA.forEach(t => {
+      for (let i = 1; i <= CARDS_PER_TEAM; i++) {
+        const s = getSticker(t.code, i);
+        if ((s.owned || 0) === 0) miss.push(`${t.code}-${i}`);
+      }
+    });
+    for (let i = 1; i <= SPECIAL_CARDS_COUNT; i++) {
+      const s = getSticker('SPECIAL', i);
+      if ((s.owned || 0) === 0) miss.push(`E-${i}`);
+    }
+    output += miss.length ? miss.join(', ') : 'Ninguna';
+    output += `\n`;
+  }
+
+  document.getElementById('tradeListOutput').value = output;
+  showToast('Lista generada');
+}
+
+function copyTradeList() {
+  const text = document.getElementById('tradeListOutput').value;
+  if (!text) { showToast('Genera una lista primero', true); return; }
+  navigator.clipboard.writeText(text).then(() => showToast('¡Copiado al portapapeles!'));
+}
+
+//=============================================================
+// RENDER: STATS
+//=============================================================
+function renderStats() {
+  const s = computeStats();
+
+  document.getElementById('statPacketsOpened').textContent = s.packets;
+  document.getElementById('statCardsPerPacket').textContent = s.cardsPerPacketActual.toFixed(2);
+  document.getElementById('statDuplicateRate').textContent = s.duplicateRate.toFixed(1) + '%';
+
+  // Day with most purchases
+  const byDay = {};
+  state.transactions.forEach(t => {
+    const d = new Date(t.createdAt).toLocaleDateString('es');
+    byDay[d] = (byDay[d] || 0) + Number(t.amount || 0);
+  });
+  const topDay = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0];
+  document.getElementById('statTopDay').textContent = topDay ? fmt.money(topDay[1]) : '-';
+  document.getElementById('statTopDaySub').textContent = topDay ? topDay[0] : '-';
+
+  // Team progress chart (top 12)
+  const teamChart = TEAMS_DATA.map(t => ({ ...t, stats: getTeamStats(t.code) }))
+    .sort((a, b) => b.stats.percent - a.stats.percent)
+    .slice(0, 12);
+
+  document.getElementById('teamProgressChart').innerHTML = teamChart.map(t => `
+    <div class="chart-bar-row">
+      <span>${flagHTML(t.flagISO, 'sm')}${t.name}</span>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="width: ${t.stats.percent}%"></div>
+      </div>
+      <span class="chart-bar-value">${t.stats.owned}/${t.stats.total}</span>
+    </div>
+  `).join('');
+
+  // Monthly spend chart
+  const byMonth = {};
+  state.transactions.forEach(t => {
+    const d = new Date(t.createdAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    byMonth[key] = (byMonth[key] || 0) + Number(t.amount || 0);
+  });
+  const sortedMonths = Object.entries(byMonth).sort((a, b) => a[0].localeCompare(b[0]));
+  const maxMonth = Math.max(...Object.values(byMonth), 1);
+
+  if (sortedMonths.length === 0) {
+    document.getElementById('monthlySpendChart').innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">No hay datos suficientes</div>';
+  } else {
+    document.getElementById('monthlySpendChart').innerHTML = sortedMonths.map(([month, total]) => {
+      const [y, m] = month.split('-');
+      const monthName = new Date(y, m-1).toLocaleDateString('es', { month: 'short', year: 'numeric' });
+      return `
+        <div class="chart-bar-row">
+          <span>${monthName}</span>
+          <div class="chart-bar-track">
+            <div class="chart-bar-fill" style="width: ${(total/maxMonth*100)}%; background: linear-gradient(90deg, var(--accent-2), #4ade80);"></div>
+          </div>
+          <span class="chart-bar-value">${fmt.money(total)}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Pace estimation
+  const txDates = state.transactions.map(t => t.createdAt).sort();
+  if (txDates.length >= 2) {
+    const daySpan = (txDates[txDates.length-1] - txDates[0]) / (1000*60*60*24);
+    const totalCards = state.transactions.reduce((a, t) => a + Number(t.cards || 0), 0);
+    const cardsPerWeek = daySpan > 0 ? (totalCards / daySpan * 7) : 0;
+
+    document.getElementById('estPace').textContent = cardsPerWeek.toFixed(1) + ' cartas/sem';
+    document.getElementById('estMissing').textContent = s.missing;
+
+    if (cardsPerWeek > 0 && s.missing > 0) {
+      // Approximate using coupon collector
+      let estCards = 0;
+      for (let i = 0; i < s.missing; i++) {
+        const probNew = (s.missing - i) / s.total;
+        estCards += 1 / probNew;
+      }
+      const weeks = estCards / cardsPerWeek;
+      let timeStr;
+      if (weeks < 1) timeStr = Math.round(weeks * 7) + ' días';
+      else if (weeks < 8) timeStr = weeks.toFixed(1) + ' semanas';
+      else if (weeks < 52) timeStr = (weeks/4.33).toFixed(1) + ' meses';
+      else timeStr = (weeks/52).toFixed(1) + ' años';
+
+      document.getElementById('estTime').textContent = timeStr;
+      document.getElementById('estCost').textContent = fmt.money(s.costToComplete);
+    } else {
+      document.getElementById('estTime').textContent = s.missing === 0 ? '¡Completo! 🎉' : '-';
+      document.getElementById('estCost').textContent = fmt.money(s.costToComplete);
+    }
+  } else {
+    document.getElementById('estPace').textContent = '-';
+    document.getElementById('estMissing').textContent = s.missing;
+    document.getElementById('estTime').textContent = '-';
+    document.getElementById('estCost').textContent = fmt.money(s.costToComplete);
+  }
+}
+
+//=============================================================
+// SETTINGS
+//=============================================================
+function loadSettingsToForm() {
+  document.getElementById('settingTotalStickers').value = state.settings.totalStickers;
+  document.getElementById('settingCurrency').value = state.settings.currency;
+  document.getElementById('settingCardsPerPacket').value = state.settings.cardsPerPacket;
+  document.getElementById('settingPacketPrice').value = state.settings.packetPrice;
+}
+
+function saveSettings() {
+  state.settings.totalStickers = parseInt(document.getElementById('settingTotalStickers').value) || DEFAULT_TOTAL;
+  state.settings.currency = document.getElementById('settingCurrency').value;
+  state.settings.cardsPerPacket = parseInt(document.getElementById('settingCardsPerPacket').value) || 5;
+  state.settings.packetPrice = parseFloat(document.getElementById('settingPacketPrice').value) || 1;
+  saveState();
+  renderAll();
+  showToast('Ajustes guardados correctamente');
+}
+
+//=============================================================
+// IMPORT / EXPORT XML / RESET
+//=============================================================
+
+// Construye un archivo XML legible y portable con el estado del álbum
+function stateToXML() {
+  const escape = (s) => String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+  const s = computeStats();
+  const now = new Date().toISOString();
+
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<!-- Archivo de progreso del Álbum Panini FIFA World Cup 2026 -->\n';
+  xml += '<!-- Mueve este archivo a otra máquina para mantener tu progreso -->\n';
+  xml += `<album version="1.0" exported="${now}">\n`;
+
+  // Metadata
+  xml += `  <meta>\n`;
+  xml += `    <createdAt>${state.createdAt || Date.now()}</createdAt>\n`;
+  xml += `    <totalProgress>${s.percent.toFixed(2)}</totalProgress>\n`;
+  xml += `    <ownedCards>${s.owned}</ownedCards>\n`;
+  xml += `    <totalCards>${s.total}</totalCards>\n`;
+  xml += `    <duplicates>${s.duplicates}</duplicates>\n`;
+  xml += `    <totalSpent>${s.totalSpent.toFixed(2)}</totalSpent>\n`;
+  xml += `  </meta>\n`;
+
+  // Settings
+  xml += `  <settings>\n`;
+  xml += `    <totalStickers>${state.settings.totalStickers}</totalStickers>\n`;
+  xml += `    <currency>${escape(state.settings.currency)}</currency>\n`;
+  xml += `    <cardsPerPacket>${state.settings.cardsPerPacket}</cardsPerPacket>\n`;
+  xml += `    <packetPrice>${state.settings.packetPrice}</packetPrice>\n`;
+  xml += `  </settings>\n`;
+
+  // Stickers (agrupados por equipo para legibilidad)
+  xml += `  <stickers>\n`;
+
+  // Agrupar por código de equipo
+  const byTeam = {};
+  for (const key in state.stickers) {
+    const [teamCode, num] = key.split('-');
+    if (!byTeam[teamCode]) byTeam[teamCode] = [];
+    byTeam[teamCode].push({ num: parseInt(num), ...state.stickers[key] });
+  }
+  // Ordenar equipos y números
+  const sortedTeams = Object.keys(byTeam).sort();
+  sortedTeams.forEach(teamCode => {
+    byTeam[teamCode].sort((a, b) => a.num - b.num);
+    xml += `    <team code="${escape(teamCode)}">\n`;
+    byTeam[teamCode].forEach(st => {
+      xml += `      <sticker number="${st.num}" owned="${st.owned || 0}" duplicates="${st.duplicates || 0}"/>\n`;
+    });
+    xml += `    </team>\n`;
+  });
+
+  xml += `  </stickers>\n`;
+
+  // Transactions
+  xml += `  <transactions>\n`;
+  state.transactions.forEach(t => {
+    xml += `    <transaction id="${escape(t.id)}">\n`;
+    xml += `      <type>${escape(t.type)}</type>\n`;
+    xml += `      <quantity>${t.qty || 1}</quantity>\n`;
+    xml += `      <amount>${t.amount}</amount>\n`;
+    xml += `      <cards>${t.cards || 0}</cards>\n`;
+    xml += `      <store>${escape(t.store || '')}</store>\n`;
+    xml += `      <createdAt>${t.createdAt}</createdAt>\n`;
+    xml += `      <date>${new Date(t.createdAt).toISOString()}</date>\n`;
+    xml += `    </transaction>\n`;
+  });
+  xml += `  </transactions>\n`;
+
+  xml += `</album>\n`;
+  return xml;
+}
+
+// Parsea el XML y reconstruye el state
+function xmlToState(xmlString) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlString, 'application/xml');
+
+  // Verificar errores de parseo
+  const parseError = doc.querySelector('parsererror');
+  if (parseError) throw new Error('XML inválido: ' + parseError.textContent);
+
+  const root = doc.querySelector('album');
+  if (!root) throw new Error('No es un archivo de álbum válido (falta <album>)');
+
+  const newState = {
+    stickers: {},
+    transactions: [],
+    settings: { totalStickers: DEFAULT_TOTAL, currency: '$', cardsPerPacket: 7, packetPrice: 1 },
+    createdAt: Date.now()
+  };
+
+  // Meta
+  const createdAtEl = doc.querySelector('meta > createdAt');
+  if (createdAtEl) newState.createdAt = parseInt(createdAtEl.textContent) || Date.now();
+
+  // Settings
+  const settingsEl = doc.querySelector('settings');
+  if (settingsEl) {
+    const ts = settingsEl.querySelector('totalStickers');
+    const cur = settingsEl.querySelector('currency');
+    const cpp = settingsEl.querySelector('cardsPerPacket');
+    const pp = settingsEl.querySelector('packetPrice');
+    if (ts) newState.settings.totalStickers = parseInt(ts.textContent) || DEFAULT_TOTAL;
+    if (cur) newState.settings.currency = cur.textContent || '$';
+    if (cpp) newState.settings.cardsPerPacket = parseInt(cpp.textContent) || 7;
+    if (pp) newState.settings.packetPrice = parseFloat(pp.textContent) || 1;
+  }
+
+  // Stickers
+  doc.querySelectorAll('stickers > team').forEach(teamEl => {
+    const teamCode = teamEl.getAttribute('code');
+    teamEl.querySelectorAll('sticker').forEach(st => {
+      const num = parseInt(st.getAttribute('number'));
+      const owned = parseInt(st.getAttribute('owned')) || 0;
+      const duplicates = parseInt(st.getAttribute('duplicates')) || 0;
+      if (owned > 0 || duplicates > 0) {
+        newState.stickers[`${teamCode}-${num}`] = { owned, duplicates };
+      }
+    });
+  });
+
+  // Transactions
+  doc.querySelectorAll('transactions > transaction').forEach(tx => {
+    const id = tx.getAttribute('id') || ('tx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7));
+    const type = tx.querySelector('type')?.textContent || 'other';
+    const qty = parseInt(tx.querySelector('quantity')?.textContent) || 1;
+    const amount = parseFloat(tx.querySelector('amount')?.textContent) || 0;
+    const cards = parseInt(tx.querySelector('cards')?.textContent) || 0;
+    const store = tx.querySelector('store')?.textContent || '';
+    const createdAt = parseInt(tx.querySelector('createdAt')?.textContent) || Date.now();
+    newState.transactions.push({ id, type, qty, amount, cards, store, createdAt });
+  });
+
+  return newState;
+}
+
+function exportData() {
+  try {
+    const xml = stateToXML();
+    const blob = new Blob([xml], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `album-panini-2026-${new Date().toISOString().slice(0,10)}.xml`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    state.lastSavedAt = Date.now();
+    state.hasUnsavedChanges = false;
+    saveState(true); // skipUnsavedMark = true para no remarcar
+    updateSaveIndicator();
+    showToast('💾 Archivo XML guardado en Descargas');
+  } catch (e) {
+    showToast('Error al exportar: ' + e.message, true);
+  }
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const content = e.target.result;
+      let newState;
+
+      // Detectar formato: XML o JSON (legacy)
+      if (content.trim().startsWith('<?xml') || content.trim().startsWith('<album')) {
+        newState = xmlToState(content);
+      } else {
+        // Compatibilidad con JSON antiguo
+        const data = JSON.parse(content);
+        newState = {
+          stickers: data.stickers || {},
+          transactions: data.transactions || [],
+          settings: data.settings || { totalStickers: DEFAULT_TOTAL, currency: '$', cardsPerPacket: 7, packetPrice: 1 },
+          createdAt: data.createdAt || Date.now()
+        };
+      }
+
+      const stickerCount = Object.keys(newState.stickers).length;
+      const txCount = newState.transactions.length;
+      if (!confirm(`Se van a importar:\n• ${stickerCount} registros de cartas\n• ${txCount} transacciones\n\nEsto REEMPLAZARÁ todos tus datos actuales. ¿Continuar?`)) {
+        event.target.value = '';
+        return;
+      }
+
+      state = newState;
+      state.lastSavedAt = Date.now();
+      state.hasUnsavedChanges = false;
+      saveState(true);
+      loadSettingsToForm();
+      renderAll();
+      updateSaveIndicator();
+      showToast(`✓ Importadas ${stickerCount} cartas y ${txCount} compras`);
+    } catch (err) {
+      showToast('Error: ' + err.message, true);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function resetAll() {
+  if (!confirm('⚠️ ¿Estás seguro de borrar TODOS tus datos? Esta acción no se puede deshacer.\n\nRecomendación: exporta tu XML primero como respaldo.')) return;
+  if (!confirm('Última confirmación: se perderán todas las cartas, compras y configuración.')) return;
+  state = {
+    stickers: {},
+    transactions: [],
+    settings: { totalStickers: DEFAULT_TOTAL, currency: '$', cardsPerPacket: 7, packetPrice: 1 },
+    createdAt: Date.now(),
+    lastSavedAt: Date.now(),
+    hasUnsavedChanges: false
+  };
+  saveState(true);
+  loadSettingsToForm();
+  renderAll();
+  updateSaveIndicator();
+  showToast('Todos los datos han sido borrados');
+}
+
+// Indicador de cambios sin guardar al archivo XML
+function markUnsaved() {
+  state.hasUnsavedChanges = true;
+  updateSaveIndicator();
+}
+
+function updateSaveIndicator() {
+  const btn = document.getElementById('saveXmlBtn');
+  if (!btn) return;
+  if (state.hasUnsavedChanges) {
+    btn.classList.add('btn-unsaved');
+    btn.innerHTML = '💾 Guardar XML <span class="unsaved-dot"></span>';
+  } else {
+    btn.classList.remove('btn-unsaved');
+    btn.innerHTML = '💾 Guardar XML';
+  }
+}
+
+//=============================================================
+// COMUNIDAD
+//=============================================================
+let communityUsers = [];
+let selectedCompareUser = null;
+
+window.loadCommunity = async function() {
+  const container = document.getElementById('communityContent');
+  container.innerHTML = `
+    <div class="community-loading">
+      <div class="spinner-lg"></div>
+      Cargando colecciones de la comunidad...
+    </div>
+  `;
+  closeCompare();
+
+  try {
+    communityUsers = await getAllUsers();
+    renderCommunity();
+  } catch (err) {
+    container.innerHTML = `
+      <div class="community-loading">
+        <div style="font-size: 36px; margin-bottom: 12px;">⚠️</div>
+        Error al cargar: ${err.message}
+        <br><br>
+        <button class="btn btn-primary btn-sm" onclick="loadCommunity()">Reintentar</button>
+      </div>
+    `;
+  }
+};
+
+function renderCommunity() {
+  const container = document.getElementById('communityContent');
+
+  if (!communityUsers || communityUsers.length === 0) {
+    container.innerHTML = `
+      <div class="community-loading">
+        <div style="font-size: 36px; margin-bottom: 12px;">👻</div>
+        No hay otros usuarios registrados todavía.
+      </div>
+    `;
+    return;
+  }
+
+  const posColors = ['gold', 'silver', 'bronze'];
+
+  const html = `
+    <div class="ranking-list">
+      ${communityUsers.map((u, i) => `
+        <div class="ranking-card ${u.isCurrentUser ? 'is-me' : ''} ${selectedCompareUser === u.userId ? 'selected' : ''}"
+             onclick="${u.isCurrentUser ? '' : `selectUserCompare('${u.userId}')`}"
+             style="${u.isCurrentUser ? 'cursor: default;' : ''}">
+          <div class="rank-position ${posColors[i] || ''}">
+            ${i + 1}
+          </div>
+          <div class="rank-info">
+            <div class="rank-name">
+              ${escapeHtml(u.displayName)}
+              ${u.isCurrentUser ? '<span class="me-badge">Tú</span>' : ''}
+            </div>
+            <div class="rank-sub">
+              ${u.owned} cartas · ${u.duplicates} repetidas · ${u.missing} faltantes
+            </div>
+          </div>
+          <div class="rank-percent">${u.percent.toFixed(1)}%</div>
+          <div class="rank-progress">
+            <div class="rank-progress-fill" style="width: ${u.percent}%"></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <p style="color: var(--text-muted); font-size: 12px; font-family: 'JetBrains Mono'; text-align: right;">
+      Haz click en cualquier usuario para ver qué cartas pueden intercambiarse
+    </p>
+  `;
+
+  container.innerHTML = html;
+}
+
+window.selectUserCompare = function(userId) {
+  selectedCompareUser = userId;
+  renderCommunity();  // re-render para actualizar la card seleccionada
+
+  const otherUser = communityUsers.find(u => u.userId === userId);
+  const meUser    = communityUsers.find(u => u.isCurrentUser);
+
+  if (!otherUser) return;
+
+  // ── Calcular qué cartas pueden intercambiarse ─────────────────────────────
+  const theyHaveDupINeed  = [];   // ellos tienen dup + yo no tengo
+  const iHaveDupTheyNeed  = [];   // yo tengo dup + ellos no tienen
+
+  const allKeys = new Set([
+    ...Object.keys(state.stickers),
+    ...Object.keys(otherUser.stickers)
+  ]);
+
+  // También iterar sobre todas las posibles cartas para capturar las faltantes
+  const TEAMS_DATA_LOCAL = typeof TEAMS_DATA !== 'undefined' ? TEAMS_DATA : [];
+  TEAMS_DATA_LOCAL.forEach(t => {
+    for (let i = 1; i <= 20; i++) allKeys.add(`${t.code}-${i}`);
+  });
+  for (let i = 1; i <= 20; i++) allKeys.add(`SPECIAL-${i}`);
+
+  allKeys.forEach(key => {
+    const myS    = state.stickers[key]       || { owned: 0, duplicates: 0 };
+    const theirS = otherUser.stickers[key]   || { owned: 0, duplicates: 0 };
+
+    // Ellos tienen dup y yo no tengo la carta
+    if ((theirS.duplicates || 0) > 0 && (myS.owned || 0) === 0) {
+      theyHaveDupINeed.push({ key, count: theirS.duplicates });
+    }
+
+    // Yo tengo dup y ellos no tienen la carta
+    if ((myS.duplicates || 0) > 0 && (theirS.owned || 0) === 0) {
+      iHaveDupTheyNeed.push({ key, count: myS.duplicates });
+    }
+  });
+
+  // ── Actualizar panel ──────────────────────────────────────────────────────
+  document.getElementById('comparePanelTitle').textContent = `Comparando con ${otherUser.displayName}`;
+  document.getElementById('theyHaveLabel').textContent = otherUser.displayName;
+  document.getElementById('iHaveLabel').textContent = otherUser.displayName;
+
+  // Stats comparadas
+  const myPercent    = meUser    ? meUser.percent    : 0;
+  const theirPercent = otherUser.percent;
+
+  document.getElementById('compareStatsGrid').innerHTML = `
+    <div class="compare-stat">
+      <div class="cs-label">Tu progreso</div>
+      <div class="cs-value" style="color: var(--accent-2);">${myPercent.toFixed(1)}%</div>
+    </div>
+    <div class="compare-stat">
+      <div class="cs-label">Progreso de ${escapeHtml(otherUser.displayName)}</div>
+      <div class="cs-value" style="color: var(--gold);">${theirPercent.toFixed(1)}%</div>
+    </div>
+    <div class="compare-stat">
+      <div class="cs-label">Posibles intercambios (ellos→ti)</div>
+      <div class="cs-value" style="color: var(--accent-2);">${theyHaveDupINeed.length}</div>
+    </div>
+    <div class="compare-stat">
+      <div class="cs-label">Posibles intercambios (tú→ellos)</div>
+      <div class="cs-value" style="color: var(--gold);">${iHaveDupTheyNeed.length}</div>
+    </div>
+  `;
+
+  // Renderizar chips de cartas
+  const renderTradeItems = (items) => {
+    if (items.length === 0) return '<span style="color: var(--text-muted); font-size: 13px;">Ninguna carta coincide</span>';
+    return items.slice(0, 150).map(({ key, count }) => {
+      const [teamCode, num] = key.split('-');
+      const teamObj = TEAMS_DATA_LOCAL.find(t => t.code === teamCode);
+      const flagIso = teamCode === 'SPECIAL' ? null : teamObj?.flagISO;
+      const flagEl  = flagIso
+        ? `<span class="flag-sm"><span class="fi fi-${flagIso}"></span></span>`
+        : '<span style="font-size: 14px;">⭐</span>';
+      return `
+        <div class="trade-item duplicate" title="${teamCode}-${num}">
+          ${flagEl}<span class="num">${key}</span>${count > 1 ? ` ×${count}` : ''}
+        </div>
+      `;
+    }).join('') + (items.length > 150 ? `<span style="color: var(--text-muted); font-size: 13px; padding: 8px;">...y ${items.length - 150} más</span>` : '');
+  };
+
+  document.getElementById('theyHaveDuplicatesINeed').innerHTML = renderTradeItems(theyHaveDupINeed);
+  document.getElementById('iHaveDuplicatesTheyNeed').innerHTML = renderTradeItems(iHaveDupTheyNeed);
+
+  // Mostrar panel
+  const panel = document.getElementById('comparePanel');
+  panel.classList.add('active');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.closeCompare = function() {
+  selectedCompareUser = null;
+  document.getElementById('comparePanel').classList.remove('active');
+};
+
+function escapeHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+//=============================================================
+// RENDER ALL & INIT
+//=============================================================
+function renderAll() {
+  renderDashboard();
+  renderAlbum();
+  renderFinances();
+  renderTrades();
+  renderStats();
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+
+    // Cargar comunidad cuando se abre la tab por primera vez
+    if (tab.dataset.tab === 'community' && communityUsers.length === 0) {
+      loadCommunity();
+    }
+  });
+});
+
+// Filters
+document.getElementById('searchTeam').addEventListener('input', renderAlbum);
+document.getElementById('filterStatus').addEventListener('change', renderAlbum);
+document.getElementById('filterGroup').addEventListener('change', renderAlbum);
+
+// ── Inicialización con carga desde la nube ────────────────────────────────────
+async function init() {
+  document.getElementById('purchaseDate').valueAsDate = new Date();
+
+  // 1. Cargar borrador local primero (respuesta inmediata)
+  loadState();
+  loadSettingsToForm();
+  renderAll();
+  updateStorageUsage();
+
+  // 2. Luego cargar desde la nube y sobrescribir si hay datos más recientes
+  try {
+    const cloudAlbum = await loadAlbum();
+    if (cloudAlbum) {
+      // Comparar timestamps para decidir cuál es más reciente
+      const cloudTs = cloudAlbum.updatedAt || cloudAlbum.createdAt || 0;
+      const localTs = state.lastSavedAt || state.createdAt || 0;
+
+      if (cloudTs >= localTs) {
+        // La nube es más reciente (o igual): usarla como fuente de verdad
+        state = {
+          ...state,              // mantener defaults
+          ...cloudAlbum,
+          hasUnsavedChanges: false,
+          lastSavedAt: cloudTs
+        };
+        if (!state.settings) state.settings = { totalStickers: DEFAULT_TOTAL, currency: '$', cardsPerPacket: 7, packetPrice: 1 };
+        saveState(true);        // sincronizar borrador local con datos de la nube
+        loadSettingsToForm();
+        renderAll();
+      }
+      // Si local es más reciente → hay cambios pendientes (ya marcados como unsaved)
+    }
+  } catch (err) {
+    // Si falla la nube, continuar con el borrador local sin bloquear al usuario
+    console.warn('[init] No se pudo cargar desde la nube:', err.message);
+    showToast('⚠️ Sin conexión a la nube. Usando datos locales.', true);
+  }
+
+  // 3. Ocultar loader
+  const loader = document.getElementById('appLoader');
+  loader.classList.add('hidden');
+  setTimeout(() => loader.remove(), 500);
+
+  updateSaveIndicator();
+}
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+init();
+
+</script>
+
+</body>
+</html>
