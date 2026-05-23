@@ -3317,6 +3317,20 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
 });
 
+// Exponer funciones al scope global para los handlers onclick del HTML
+// (necesario porque el script es type="module" y las funciones son locales al módulo)
+window.openTeam         = openTeam;
+window.closeModal       = closeModal;
+window.bulkMark         = bulkMark;
+window.toggleSticker    = toggleSticker;
+window.addDuplicate     = addDuplicate;
+window.addPurchase      = addPurchase;
+window.deleteTransaction = deleteTransaction;
+window.generateTradeList = generateTradeList;
+window.copyTradeList    = copyTradeList;
+window.saveSettings     = saveSettings;
+window.resetAll         = resetAll;
+
 init();
 
 </script>
