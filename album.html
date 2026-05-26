@@ -2433,8 +2433,29 @@ function renderAlbum() {
   }
 }
 
-function openTeam(code) {
+async function openTeam(code) {
   currentTeam = code;
+
+  // NUEVO: Cargar datos desde MongoDB para este equipo
+  if (!isDemoMode()) {
+    try {
+      const cloudAlbum = await loadAlbum();
+      if (cloudAlbum && cloudAlbum.stickers) {
+        // Actualizar solo los stickers de este equipo desde la nube
+        const total = code === 'SPECIAL' ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
+        for (let i = 1; i <= total; i++) {
+          const key = `${code}-${i}`;
+          if (cloudAlbum.stickers[key]) {
+            state.stickers[key] = { ...cloudAlbum.stickers[key] };
+          }
+        }
+        console.log(`[openTeam] Datos de ${code} sincronizados desde MongoDB`);
+      }
+    } catch (err) {
+      console.warn(`[openTeam] No se pudo cargar datos de ${code} desde la nube:`, err.message);
+      // Continuar con datos locales si falla
+    }
+  }
 
   // Guardar el estado actual del equipo antes de abrirlo (para poder hacer revert)
   const total = code === 'SPECIAL' ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
@@ -2588,7 +2609,25 @@ function closeTeamModal(save) {
 //=============================================================
 // RENDER: ESPECIALES (COCA-COLA + CIUDADES)
 //=============================================================
-function renderCokeCards() {
+async function renderCokeCards() {
+  // Cargar datos desde MongoDB primero
+  if (!isDemoMode()) {
+    try {
+      const cloudAlbum = await loadAlbum();
+      if (cloudAlbum && cloudAlbum.stickers) {
+        COCACOLA_CARDS.forEach(card => {
+          const key = card.code;
+          if (cloudAlbum.stickers[key]) {
+            state.stickers[key] = { ...cloudAlbum.stickers[key] };
+          }
+        });
+        console.log('[renderCokeCards] Datos sincronizados desde MongoDB');
+      }
+    } catch (err) {
+      console.warn('[renderCokeCards] No se pudo sincronizar desde MongoDB:', err.message);
+    }
+  }
+
   const grid = document.getElementById('cokeCardsGrid');
   let html = '';
 
@@ -2617,7 +2656,25 @@ function renderCokeCards() {
   grid.innerHTML = html;
 }
 
-function renderSpecialCards() {
+async function renderSpecialCards() {
+  // Cargar datos desde MongoDB primero
+  if (!isDemoMode()) {
+    try {
+      const cloudAlbum = await loadAlbum();
+      if (cloudAlbum && cloudAlbum.stickers) {
+        SPECIAL_CARDS.forEach(card => {
+          const key = card.code;
+          if (cloudAlbum.stickers[key]) {
+            state.stickers[key] = { ...cloudAlbum.stickers[key] };
+          }
+        });
+        console.log('[renderSpecialCards] Datos sincronizados desde MongoDB');
+      }
+    } catch (err) {
+      console.warn('[renderSpecialCards] No se pudo sincronizar desde MongoDB:', err.message);
+    }
+  }
+
   const grid = document.getElementById('specialCardsGrid');
   let html = '';
 
@@ -3440,11 +3497,11 @@ function escapeHtml(str) {
 //=============================================================
 // RENDER ALL & INIT
 //=============================================================
-function renderAll() {
+async function renderAll() {
   renderDashboard();
   renderAlbum();
-  renderSpecialCards();
-  renderCokeCards();
+  await renderSpecialCards();
+  await renderCokeCards();
   renderFinances();
   renderTrades();
   renderStats();
