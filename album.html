@@ -2111,6 +2111,11 @@ function getSticker(teamCode, num) {
   return state.stickers[key] || { owned: 0, duplicates: 0 };
 }
 
+function getCokeSticker(num) {
+  const code = `CC${num}`;
+  return state.stickers[code] || { owned: 0, duplicates: 0 };
+}
+
 // Renderizar bandera como logo circular (usa flag-icons CDN)
 function flagHTML(iso, size = 'team') {
   if (!iso) return '<div class="team-flag"></div>';
@@ -2426,6 +2431,62 @@ function renderAlbum() {
     }
   }
 
+  // Cartas Coca-Cola como "equipo" virtual
+  if (!search || 'coca'.includes(search) || 'coke'.includes(search) || 'cc'.includes(search)) {
+    let ownedCoke = 0, dupCoke = 0;
+    for (let i = 1; i <= COCACOLA_CARDS_COUNT; i++) {
+      const s = getCokeSticker(i);
+      if (s.owned > 0) ownedCoke++;
+      dupCoke += (s.duplicates || 0);
+    }
+    const pctCoke = (ownedCoke / COCACOLA_CARDS_COUNT * 100);
+
+    const passStatusFilterCoke = (
+      (filterStatus === 'all') ||
+      (filterStatus === 'complete' && pctCoke === 100) ||
+      (filterStatus === 'incomplete' && pctCoke > 0 && pctCoke < 100) ||
+      (filterStatus === 'empty' && ownedCoke === 0)
+    );
+
+    if (passStatusFilterCoke) {
+      html = `
+        <div class="group-header special-group-header">
+          <div class="group-header-left">
+            <div class="group-badge" style="background: #ff3366; color: white;">🥤</div>
+            <div>
+              <div class="group-title">Cartas Coca-Cola</div>
+              <div class="group-subtitle">${COCACOLA_CARDS_COUNT} cartas · ${ownedCoke}/${COCACOLA_CARDS_COUNT}</div>
+            </div>
+          </div>
+          <div class="group-progress-wrap">
+            <div class="group-progress-bar"><div class="group-progress-fill" style="width: ${pctCoke}%; background: #ff3366;"></div></div>
+            <div class="group-progress-text" style="color: #ff3366;">${pctCoke.toFixed(0)}%</div>
+          </div>
+        </div>
+        <div class="teams-grid-inner">
+          <div class="team-card ${pctCoke === 100 ? 'complete' : ''}" onclick="openTeam('COKE')" style="border-color: #ff3366; background: linear-gradient(135deg, var(--panel) 0%, rgba(255,51,102,.08) 100%);">
+            <div class="team-card-code" style="background: #ff3366; color: white;">CC</div>
+            <div class="team-header">
+              <div class="team-flag" style="display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #ff3366, #ff6b9d);">🥤</div>
+              <div>
+                <div class="team-name">Coca-Cola</div>
+                <div class="team-group" style="color: #ff3366;">14 Cartas Exclusivas</div>
+              </div>
+            </div>
+            <div class="team-stats">
+              <span>${ownedCoke}/${COCACOLA_CARDS_COUNT}</span>
+              <span style="color: #ff3366;">${dupCoke} repe.</span>
+              <span style="color: var(--accent-2);">${pctCoke.toFixed(0)}%</span>
+            </div>
+            <div class="team-progress">
+              <div class="team-progress-fill" style="width: ${pctCoke}%; background: #ff3366;"></div>
+            </div>
+          </div>
+        </div>
+      ` + html;
+    }
+  }
+
   if (!html) {
     grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-state-icon">🔍</div>No se encontraron equipos con esos filtros</div>';
   } else {
@@ -2442,9 +2503,20 @@ async function openTeam(code) {
       const cloudAlbum = await loadAlbum();
       if (cloudAlbum && cloudAlbum.stickers) {
         // Actualizar solo los stickers de este equipo desde la nube
-        const total = code === 'SPECIAL' ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
+        let total, keyPrefix;
+        if (code === 'SPECIAL') {
+          total = SPECIAL_CARDS_COUNT;
+          keyPrefix = 'SPECIAL';
+        } else if (code === 'COKE') {
+          total = COCACOLA_CARDS_COUNT;
+          keyPrefix = 'CC';
+        } else {
+          total = CARDS_PER_TEAM;
+          keyPrefix = code;
+        }
+
         for (let i = 1; i <= total; i++) {
-          const key = `${code}-${i}`;
+          const key = keyPrefix === 'CC' ? `${keyPrefix}${i}` : `${keyPrefix}-${i}`;
           if (cloudAlbum.stickers[key]) {
             state.stickers[key] = { ...cloudAlbum.stickers[key] };
           }
@@ -2458,25 +2530,41 @@ async function openTeam(code) {
   }
 
   // Guardar el estado actual del equipo antes de abrirlo (para poder hacer revert)
-  const total = code === 'SPECIAL' ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
+  let total, keyPrefix;
+  if (code === 'SPECIAL') {
+    total = SPECIAL_CARDS_COUNT;
+    keyPrefix = 'SPECIAL';
+  } else if (code === 'COKE') {
+    total = COCACOLA_CARDS_COUNT;
+    keyPrefix = 'CC';
+  } else {
+    total = CARDS_PER_TEAM;
+    keyPrefix = code;
+  }
+
   teamStateBeforeModal = {};
   for (let i = 1; i <= total; i++) {
-    const key = `${code}-${i}`;
+    const key = keyPrefix === 'CC' ? `${keyPrefix}${i}` : `${keyPrefix}-${i}`;
     const sticker = state.stickers[key];
     teamStateBeforeModal[key] = sticker ? { ...sticker } : { owned: 0, duplicates: 0 };
   }
 
   const isSpecial = code === 'SPECIAL';
+  const isCoke = code === 'COKE';
   const team = isSpecial
     ? { name: 'Cartas Especiales', flagISO: null, group: 'FWC 00 + FWC 1-8 (Estadios)' }
+    : isCoke
+    ? { name: 'Coca-Cola', flagISO: null, group: '14 Cartas Exclusivas' }
     : TEAMS_DATA.find(t => t.code === code);
 
   const flagDisplay = isSpecial
     ? '<span class="modal-flag" style="display: inline-flex; align-items: center; justify-content: center; font-size: 32px; background: linear-gradient(135deg, var(--gold), #fab005);">⭐</span>'
+    : isCoke
+    ? '<span class="modal-flag" style="display: inline-flex; align-items: center; justify-content: center; font-size: 32px; background: linear-gradient(135deg, #ff3366, #ff6b9d);">🥤</span>'
     : flagHTML(team.flagISO, 'modal');
 
   document.getElementById('modalTeamName').innerHTML = `${flagDisplay}<span style="vertical-align: middle;">${team.name}</span>`;
-  document.getElementById('modalTeamGroup').textContent = isSpecial ? team.group : `Grupo ${team.group}${team.host ? ' · Anfitrión' : ''} · Código: ${team.code}`;
+  document.getElementById('modalTeamGroup').textContent = isSpecial || isCoke ? team.group : `Grupo ${team.group}${team.host ? ' · Anfitrión' : ''} · Código: ${team.code}`;
 
   renderStickers();
   document.getElementById('teamModal').classList.add('active');
@@ -2484,13 +2572,14 @@ async function openTeam(code) {
 
 function renderStickers() {
   const isSpecial = currentTeam === 'SPECIAL';
-  const total = isSpecial ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
+  const isCoke = currentTeam === 'COKE';
+  const total = isSpecial ? SPECIAL_CARDS_COUNT : (isCoke ? COCACOLA_CARDS_COUNT : CARDS_PER_TEAM);
   const grid = document.getElementById('stickersGrid');
   const code = currentTeam;
 
   let html = '';
   for (let i = 1; i <= total; i++) {
-    const s = getSticker(code, i);
+    const s = isCoke ? getCokeSticker(i) : getSticker(code, i);
     const isOwned = s.owned > 0;
     const hasDup = (s.duplicates || 0) > 0;
     const isLegendary = false; // No hay cartas legendarias en FWC
@@ -2500,6 +2589,9 @@ function renderStickers() {
       // 9 cartas especiales: FWC 00 + FWC 1-8 (estadios/ciudades)
       if (i === 1) label = 'FWC 00';
       else label = `FWC ${i-1}`;
+    } else if (isCoke) {
+      // 14 cartas Coca-Cola
+      label = `Coca-Cola ${i}`;
     } else {
       // 20 cartas por equipo: 1 escudo + 11 jugadores + 1 plantilla (foto) + 7 jugadores
       // Numeración: 1=Escudo, 2-12=Jugador 1-11, 13=Plantilla, 14-20=Jugador 12-18
@@ -2524,12 +2616,24 @@ function renderStickers() {
 }
 
 function toggleSticker(code, num) {
-  const s = getSticker(code, num);
-  if (s.owned > 0) {
-    setSticker(code, num, { owned: 0, duplicates: 0 });
+  const isCoke = code === 'COKE';
+  const s = isCoke ? getCokeSticker(num) : getSticker(code, num);
+
+  if (isCoke) {
+    const key = `CC${num}`;
+    if (s.owned > 0) {
+      state.stickers[key] = { owned: 0, duplicates: 0 };
+    } else {
+      state.stickers[key] = { owned: 1, duplicates: 0 };
+    }
   } else {
-    setSticker(code, num, { owned: 1, duplicates: 0 });
+    if (s.owned > 0) {
+      setSticker(code, num, { owned: 0, duplicates: 0 });
+    } else {
+      setSticker(code, num, { owned: 1, duplicates: 0 });
+    }
   }
+
   saveState();
   renderStickers();
   renderAlbum();
@@ -2537,14 +2641,28 @@ function toggleSticker(code, num) {
 }
 
 function addDuplicate(code, num) {
-  const s = getSticker(code, num);
-  if (s.owned === 0) {
-    setSticker(code, num, { owned: 1, duplicates: 0 });
-    showToast('Carta marcada como obtenida');
+  const isCoke = code === 'COKE';
+  const s = isCoke ? getCokeSticker(num) : getSticker(code, num);
+
+  if (isCoke) {
+    const key = `CC${num}`;
+    if (s.owned === 0) {
+      state.stickers[key] = { owned: 1, duplicates: 0 };
+      showToast('Carta marcada como obtenida');
+    } else {
+      state.stickers[key] = { owned: 1, duplicates: (s.duplicates || 0) + 1 };
+      showToast(`Repetida #${(s.duplicates || 0) + 1} añadida`);
+    }
   } else {
-    setSticker(code, num, { owned: 1, duplicates: (s.duplicates || 0) + 1 });
-    showToast(`Repetida #${(s.duplicates || 0) + 1} añadida`);
+    if (s.owned === 0) {
+      setSticker(code, num, { owned: 1, duplicates: 0 });
+      showToast('Carta marcada como obtenida');
+    } else {
+      setSticker(code, num, { owned: 1, duplicates: (s.duplicates || 0) + 1 });
+      showToast(`Repetida #${(s.duplicates || 0) + 1} añadida`);
+    }
   }
+
   saveState();
   renderStickers();
   renderAlbum();
@@ -2553,15 +2671,28 @@ function addDuplicate(code, num) {
 
 function bulkMark(action) {
   const isSpecial = currentTeam === 'SPECIAL';
-  const total = isSpecial ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
+  const isCoke = currentTeam === 'COKE';
+  const total = isSpecial ? SPECIAL_CARDS_COUNT : (isCoke ? COCACOLA_CARDS_COUNT : CARDS_PER_TEAM);
+
   for (let i = 1; i <= total; i++) {
-    if (action === 'all') {
-      const s = getSticker(currentTeam, i);
-      if (s.owned === 0) setSticker(currentTeam, i, { owned: 1, duplicates: 0 });
+    if (isCoke) {
+      const key = `CC${i}`;
+      if (action === 'all') {
+        const s = getCokeSticker(i);
+        if (s.owned === 0) state.stickers[key] = { owned: 1, duplicates: 0 };
+      } else {
+        state.stickers[key] = { owned: 0, duplicates: 0 };
+      }
     } else {
-      setSticker(currentTeam, i, { owned: 0, duplicates: 0 });
+      if (action === 'all') {
+        const s = getSticker(currentTeam, i);
+        if (s.owned === 0) setSticker(currentTeam, i, { owned: 1, duplicates: 0 });
+      } else {
+        setSticker(currentTeam, i, { owned: 0, duplicates: 0 });
+      }
     }
   }
+
   saveState();
   renderStickers();
   renderAlbum();
@@ -2577,8 +2708,12 @@ function closeTeamModal(save) {
   if (save === false) {
     // Cancelar: revertir al estado anterior
     if (teamStateBeforeModal && currentTeam) {
+      const isCoke = currentTeam === 'COKE';
+      const keyPattern = isCoke ? 'CC' : (currentTeam + '-');
+
       for (const key in teamStateBeforeModal) {
-        if (key.startsWith(currentTeam + '-')) {
+        const matches = isCoke ? key.startsWith('CC') : key.startsWith(keyPattern);
+        if (matches) {
           state.stickers[key] = { ...teamStateBeforeModal[key] };
         }
       }
