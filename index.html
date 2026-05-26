@@ -366,6 +366,12 @@
       <span class="btn-text">INICIAR SESIÓN</span>
     </button>
 
+    <div style="text-align: center; margin-top: 16px;">
+      <button class="btn-login" style="background: linear-gradient(135deg, var(--accent-2), #00b894); margin-bottom: 0;" id="demoBtnBefore" onclick="handleDemoLogin()">
+        <span class="btn-text">🎯 MODO DEMO</span>
+      </button>
+    </div>
+
     <div class="login-footer">
       v2.0 · <span>Panini Tracker</span> · Solo usuarios autorizados
     </div>
@@ -408,6 +414,30 @@
       window.location.replace('./album.html');
     } catch (err) {
       showError(err.message || 'Error al iniciar sesión. Intenta de nuevo.');
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  };
+
+  // Exponer handleDemoLogin globalmente para el botón de demo
+  window.handleDemoLogin = async function () {
+    const btn = document.getElementById('demoBtnBefore');
+    const errorEl = document.getElementById('errorMsg');
+
+    // Limpiar error anterior
+    errorEl.classList.remove('show');
+    errorEl.textContent = '';
+
+    // Estado de carga
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+      await login('demo@demo', 'Demo$001');
+      // Redirigir al álbum
+      window.location.replace('./album.html');
+    } catch (err) {
+      showError(err.message || 'Error al activar modo demo. Intenta de nuevo.');
       btn.classList.remove('loading');
       btn.disabled = false;
     }

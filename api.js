@@ -84,6 +84,12 @@ export function getCurrentUser() {
   }
 }
 
+/** Retorna true si estamos en modo demo (sin sincronización con servidor) */
+export function isDemoMode() {
+  const user = getCurrentUser();
+  return user?.userId === 'demo-user';
+}
+
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 /**
@@ -132,6 +138,7 @@ export async function loadAlbum() {
 /**
  * Guarda el estado completo del álbum en MongoDB.
  * Llama a /.netlify/functions/album → PUT
+ * En modo demo, solo guarda localmente (no hace llamada al servidor).
  *
  * @param {object} albumState  El objeto `state` de la app
  * @returns {Promise<void>}
@@ -139,6 +146,11 @@ export async function loadAlbum() {
 export async function saveAlbum(albumState) {
   // No enviamos campos internos de UI
   const { hasUnsavedChanges, lastSavedAt, ...cleanState } = albumState;
+
+  // En modo demo, no sincronizar con servidor (solo localStorage)
+  if (isDemoMode()) {
+    return;
+  }
 
   await apiFetch('album', {
     method: 'PUT',

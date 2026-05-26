@@ -98,9 +98,9 @@ exports.handler = async (event) => {
   try {
     const db = await getDb();
 
-    // Obtener todos los álbumes
+    // Obtener todos los álbumes (excluir demo-user)
     const albums = await db.collection('albums')
-      .find({}, { projection: { userId: 1, stickers: 1 } })
+      .find({ userId: { $ne: 'demo-user' } }, { projection: { userId: 1, stickers: 1 } })
       .toArray();
 
     // Obtener displayNames de la colección users

@@ -90,6 +90,11 @@ exports.handler = async (event) => {
         return json(400, { message: 'Datos del álbum inválidos' });
       }
 
+      // ── Demo mode: no guardar en BD ────────────────────────────────────────
+      if (decoded.userId === 'demo-user') {
+        return json(200, { message: 'Modo demo - datos guardados localmente' });
+      }
+
       // Sanitizar: asegurarse de que no se sobreescriban campos de control
       const { stickers, transactions, settings, createdAt } = album;
 

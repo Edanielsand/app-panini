@@ -1492,7 +1492,6 @@
         <span class="user-name" id="userName">...</span>
         <button class="btn-logout" onclick="handleLogout()">Salir</button>
       </div>
-      <button class="btn btn-cloud-save btn-sm" id="cloudSaveBtn" onclick="saveToCloud()">☁️ Guardar</button>
       <button class="btn btn-danger btn-sm" onclick="resetAll()">🗑️ Reset</button>
     </div>
   </header>
@@ -1501,6 +1500,7 @@
   <nav class="tabs">
     <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
     <button class="tab" data-tab="album">📖 Álbum</button>
+    <button class="tab" data-tab="specials">⭐ Especiales</button>
     <button class="tab" data-tab="finances">💰 Finanzas</button>
     <button class="tab" data-tab="trades">🔄 Intercambios</button>
     <button class="tab" data-tab="community">👥 Comunidad</button>
@@ -1586,6 +1586,21 @@
     </div>
 
     <div class="teams-grid" id="teamsGrid"></div>
+  </section>
+
+  <!-- ============ ESPECIALES ============ -->
+  <section class="tab-content" id="tab-specials">
+    <div style="margin-bottom: 30px;">
+      <h3 style="font-family: 'Bebas Neue'; font-size: 24px; margin-bottom: 16px;">🥤 Cartas Coca-Cola</h3>
+      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 16px;">14 cartas exclusivas patrocinadas por Coca-Cola</p>
+      <div class="teams-grid" id="cokeCardsGrid"></div>
+    </div>
+
+    <div>
+      <h3 style="font-family: 'Bebas Neue'; font-size: 24px; margin-bottom: 16px;">🏟️ Cartas de Ciudades</h3>
+      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 16px;">9 cartas de estadios y ciudades donde se juegan los partidos (FWC 00 + FWC 1-8)</p>
+      <div class="teams-grid" id="cityCardsGrid"></div>
+    </div>
   </section>
 
   <!-- ============ FINANZAS ============ -->
@@ -1842,21 +1857,21 @@
       </div>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
-    <div style="display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap;">
-      <button class="btn btn-success btn-sm" onclick="bulkMark('all')">✓ Marcar todas</button>
-      <button class="btn btn-ghost btn-sm" onclick="bulkMark('none')">✗ Desmarcar todas</button>
-    </div>
     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
       💡 <strong>Click</strong> para marcar/desmarcar · <strong>Click derecho</strong> para añadir repetidas
     </div>
     <div class="stickers-grid" id="stickersGrid"></div>
+    <div style="display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); justify-content: flex-end; flex-wrap: wrap;">
+      <button class="btn btn-ghost btn-sm" id="modalCancelBtn" onclick="closeTeamModal(false)">✕ Cancelar</button>
+      <button class="btn btn-success btn-sm" id="modalSaveBtn" onclick="closeTeamModal(true)">💾 Guardar</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { isAuthenticated, getCurrentUser, logout, loadAlbum, saveAlbum, getAllUsers } from './api.js';
+import { isAuthenticated, getCurrentUser, logout, loadAlbum, saveAlbum, getAllUsers, isDemoMode } from './api.js';
 
 //=============================================================
 // AUTH GUARD
@@ -1949,13 +1964,52 @@ const TEAMS_DATA = [
   { name: 'Panamá', code: 'PAN', flagISO: 'pa', group: 'L' },
 ];
 
-// Cada equipo tiene 20 cartas: 1 escudo + 1 foto de equipo + 18 jugadores
-// (datos oficiales Panini FIFA World Cup 2026 - 980 stickers totales)
+//=============================================================
+// DATOS: COCA-COLA (14 tarjetas exclusivas)
+//=============================================================
+const COCACOLA_CARDS = [
+  { code: 'CC1', name: 'Coca-Cola 1' },
+  { code: 'CC2', name: 'Coca-Cola 2' },
+  { code: 'CC3', name: 'Coca-Cola 3' },
+  { code: 'CC4', name: 'Coca-Cola 4' },
+  { code: 'CC5', name: 'Coca-Cola 5' },
+  { code: 'CC6', name: 'Coca-Cola 6' },
+  { code: 'CC7', name: 'Coca-Cola 7' },
+  { code: 'CC8', name: 'Coca-Cola 8' },
+  { code: 'CC9', name: 'Coca-Cola 9' },
+  { code: 'CC10', name: 'Coca-Cola 10' },
+  { code: 'CC11', name: 'Coca-Cola 11' },
+  { code: 'CC12', name: 'Coca-Cola 12' },
+  { code: 'CC13', name: 'Coca-Cola 13' },
+  { code: 'CC14', name: 'Coca-Cola 14' }
+];
+
+//=============================================================
+// DATOS: CIUDADES (9 tarjetas de estadios/ciudades)
+//=============================================================
+const CITY_CARDS = [
+  { code: 'FWC00', name: 'FWC Intro', city: 'FIFA World Cup 2026' },
+  { code: 'FWC1', name: 'FWC 1', city: 'Ciudad' },
+  { code: 'FWC2', name: 'FWC 2', city: 'Ciudad' },
+  { code: 'FWC3', name: 'FWC 3', city: 'Ciudad' },
+  { code: 'FWC4', name: 'FWC 4', city: 'Ciudad' },
+  { code: 'FWC5', name: 'FWC 5', city: 'Ciudad' },
+  { code: 'FWC6', name: 'FWC 6', city: 'Ciudad' },
+  { code: 'FWC7', name: 'FWC 7', city: 'Ciudad' },
+  { code: 'FWC8', name: 'FWC 8', city: 'Ciudad' }
+];
+
+// Cada equipo tiene 20 cartas: 1 escudo + 11 jugadores + 1 foto de equipo (plantilla) + 7 jugadores
+// Numeración: 1=Escudo, 2-12=Jugador 1-11, 13=Plantilla, 14-20=Jugador 12-18
 const CARDS_PER_TEAM = 20;
 // Cartas especiales: 9 de Introducción + 11 del FIFA Museum (campeones pasados)
 const SPECIAL_CARDS_COUNT = 20;
-// Total oficial: 48*20 + 20 = 980 cartas
-const DEFAULT_TOTAL = TEAMS_DATA.length * CARDS_PER_TEAM + SPECIAL_CARDS_COUNT;
+// Cartas Coca-Cola (exclusivas)
+const COCACOLA_CARDS_COUNT = 14;
+// Cartas de Ciudades/Estadios (FWC 00 + FWC 1-8)
+const CITY_CARDS_COUNT = 9;
+// Total: 48*20 + 20 (especiales) + 14 (Coca-Cola) + 9 (Ciudades) = 1,003 cartas
+const DEFAULT_TOTAL = TEAMS_DATA.length * CARDS_PER_TEAM + SPECIAL_CARDS_COUNT + COCACOLA_CARDS_COUNT + CITY_CARDS_COUNT;
 
 //=============================================================
 // STATE & STORAGE
@@ -1973,6 +2027,10 @@ let state = {
   },
   createdAt: Date.now()
 };
+
+// Para manejar el revert de cambios en el modal
+let currentTeam = null;
+let teamStateBeforeModal = null;
 
 function loadState() {
   // Intentar cargar desde localStorage (borrador local)
@@ -2381,6 +2439,16 @@ function renderAlbum() {
 
 function openTeam(code) {
   currentTeam = code;
+
+  // Guardar el estado actual del equipo antes de abrirlo (para poder hacer revert)
+  const total = code === 'SPECIAL' ? SPECIAL_CARDS_COUNT : CARDS_PER_TEAM;
+  teamStateBeforeModal = {};
+  for (let i = 1; i <= total; i++) {
+    const key = `${code}-${i}`;
+    const sticker = state.stickers[key];
+    teamStateBeforeModal[key] = sticker ? { ...sticker } : { owned: 0, duplicates: 0 };
+  }
+
   const isSpecial = code === 'SPECIAL';
   const team = isSpecial
     ? { name: 'Cartas Especiales', flagISO: null, group: '9 Introducción + 11 FIFA Museum' }
@@ -2416,10 +2484,12 @@ function renderStickers() {
       if (i <= 9) label = `Intro ${i}`;
       else label = `FIFA Museum ${i-9}`;
     } else {
-      // 20 cartas por equipo: 1 escudo (foil) + 1 foto del equipo + 18 jugadores
+      // 20 cartas por equipo: 1 escudo + 11 jugadores + 1 plantilla (foto) + 7 jugadores
+      // Numeración: 1=Escudo, 2-12=Jugador 1-11, 13=Plantilla, 14-20=Jugador 12-18
       if (i === 1) label = 'Escudo';
-      else if (i === 2) label = 'Plantilla';
-      else label = `Jugador ${i-2}`;
+      else if (i >= 2 && i <= 12) label = `Jugador ${i-1}`;
+      else if (i === 13) label = 'Plantilla';
+      else label = `Jugador ${i-1}`;
     }
 
     html += `
@@ -2483,8 +2553,145 @@ function bulkMark(action) {
 }
 
 function closeModal() {
+  closeTeamModal(false);  // Cancelar sin guardar
+}
+
+function closeTeamModal(save) {
+  if (save === false) {
+    // Cancelar: revertir al estado anterior
+    if (teamStateBeforeModal && currentTeam) {
+      for (const key in teamStateBeforeModal) {
+        if (key.startsWith(currentTeam + '-')) {
+          state.stickers[key] = { ...teamStateBeforeModal[key] };
+        }
+      }
+    }
+  } else if (save === true) {
+    // Guardar: persitir cambios en localStorage y API
+    saveState();
+    if (!isDemoMode()) {
+      saveAlbum(state).catch(err => {
+        console.error('Error al guardar en la nube:', err);
+        showToast('⚠️ Error al guardar en la nube', true);
+      });
+    } else {
+      showToast('✓ Cambios guardados localmente');
+    }
+  }
+
+  // Cerrar modal
   document.getElementById('teamModal').classList.remove('active');
   currentTeam = null;
+  teamStateBeforeModal = null;
+
+  // Actualizar vista
+  renderAlbum();
+  renderDashboard();
+}
+
+//=============================================================
+// RENDER: ESPECIALES (COCA-COLA + CIUDADES)
+//=============================================================
+function renderCokeCards() {
+  const grid = document.getElementById('cokeCardsGrid');
+  let html = '';
+
+  COCACOLA_CARDS.forEach(card => {
+    const key = card.code;
+    const sticker = state.stickers[key] || { owned: 0, duplicates: 0 };
+    const isOwned = sticker.owned > 0;
+    const hasDup = (sticker.duplicates || 0) > 0;
+
+    html += `
+      <div class="team-card ${isOwned ? 'complete' : ''}" style="background: linear-gradient(135deg, var(--panel) 0%, rgba(200,16,46,.1) 100%); border-color: rgba(200,16,46,.3);">
+        <div class="team-header">
+          <div class="team-code" style="font-weight: 700; color: #ff3366;">${key}</div>
+          <div class="team-progress">
+            <span class="progress-text" style="font-size: 12px; color: var(--text-muted);">${isOwned ? '✓ Obtenida' : 'Faltante'}</span>
+          </div>
+        </div>
+        <div class="team-name">${card.name}</div>
+        ${hasDup ? `<div style="font-size: 11px; color: var(--accent-2); margin-top: 6px;">+${sticker.duplicates} repetida${sticker.duplicates > 1 ? 's' : ''}</div>` : ''}
+        <button class="btn btn-sm" style="margin-top: 10px; width: 100%; padding: 6px; font-size: 12px;" onclick="toggleCoke('${key}')">${isOwned ? '✓ Marcar' : 'Obtener'}</button>
+        <button class="btn btn-ghost btn-sm" style="margin-top: 4px; width: 100%; padding: 6px; font-size: 12px;" onclick="addDupCoke('${key}')">➕ Repetida</button>
+      </div>
+    `;
+  });
+
+  grid.innerHTML = html;
+}
+
+function renderCityCards() {
+  const grid = document.getElementById('cityCardsGrid');
+  let html = '';
+
+  CITY_CARDS.forEach(card => {
+    const key = card.code;
+    const sticker = state.stickers[key] || { owned: 0, duplicates: 0 };
+    const isOwned = sticker.owned > 0;
+    const hasDup = (sticker.duplicates || 0) > 0;
+
+    html += `
+      <div class="team-card ${isOwned ? 'complete' : ''}" style="background: linear-gradient(135deg, var(--panel) 0%, rgba(0,217,163,.1) 100%); border-color: rgba(0,217,163,.3);">
+        <div class="team-header">
+          <div class="team-code" style="font-weight: 700; color: #00d9a3;">${key}</div>
+          <div class="team-progress">
+            <span class="progress-text" style="font-size: 12px; color: var(--text-muted);">${isOwned ? '✓ Obtenida' : 'Faltante'}</span>
+          </div>
+        </div>
+        <div class="team-name">${card.name}</div>
+        ${hasDup ? `<div style="font-size: 11px; color: var(--accent-2); margin-top: 6px;">+${sticker.duplicates} repetida${sticker.duplicates > 1 ? 's' : ''}</div>` : ''}
+        <button class="btn btn-sm" style="margin-top: 10px; width: 100%; padding: 6px; font-size: 12px;" onclick="toggleCity('${key}')">${isOwned ? '✓ Marcar' : 'Obtener'}</button>
+        <button class="btn btn-ghost btn-sm" style="margin-top: 4px; width: 100%; padding: 6px; font-size: 12px;" onclick="addDupCity('${key}')">➕ Repetida</button>
+      </div>
+    `;
+  });
+
+  grid.innerHTML = html;
+}
+
+function toggleCoke(code) {
+  const s = state.stickers[code] || { owned: 0, duplicates: 0 };
+  state.stickers[code] = {
+    owned: s.owned > 0 ? 0 : 1,
+    duplicates: s.owned > 0 ? 0 : s.duplicates
+  };
+  saveState();
+  renderCokeCards();
+  renderDashboard();
+}
+
+function addDupCoke(code) {
+  const s = state.stickers[code] || { owned: 0, duplicates: 0 };
+  state.stickers[code] = {
+    owned: 1,
+    duplicates: (s.duplicates || 0) + 1
+  };
+  saveState();
+  renderCokeCards();
+  renderDashboard();
+}
+
+function toggleCity(code) {
+  const s = state.stickers[code] || { owned: 0, duplicates: 0 };
+  state.stickers[code] = {
+    owned: s.owned > 0 ? 0 : 1,
+    duplicates: s.owned > 0 ? 0 : s.duplicates
+  };
+  saveState();
+  renderCityCards();
+  renderDashboard();
+}
+
+function addDupCity(code) {
+  const s = state.stickers[code] || { owned: 0, duplicates: 0 };
+  state.stickers[code] = {
+    owned: 1,
+    duplicates: (s.duplicates || 0) + 1
+  };
+  saveState();
+  renderCityCards();
+  renderDashboard();
 }
 
 //=============================================================
@@ -3240,6 +3447,8 @@ function escapeHtml(str) {
 function renderAll() {
   renderDashboard();
   renderAlbum();
+  renderCokeCards();
+  renderCityCards();
   renderFinances();
   renderTrades();
   renderStats();
@@ -3321,9 +3530,14 @@ document.addEventListener('keydown', (e) => {
 // (necesario porque el script es type="module" y las funciones son locales al módulo)
 window.openTeam         = openTeam;
 window.closeModal       = closeModal;
+window.closeTeamModal   = closeTeamModal;
 window.bulkMark         = bulkMark;
 window.toggleSticker    = toggleSticker;
 window.addDuplicate     = addDuplicate;
+window.toggleCoke       = toggleCoke;
+window.addDupCoke       = addDupCoke;
+window.toggleCity       = toggleCity;
+window.addDupCity       = addDupCity;
 window.addPurchase      = addPurchase;
 window.deleteTransaction = deleteTransaction;
 window.generateTradeList = generateTradeList;

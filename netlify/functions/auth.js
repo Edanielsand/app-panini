@@ -72,6 +72,30 @@ exports.handler = async (event) => {
     return json(400, { message: 'Correo y contraseña son requeridos' });
   }
 
+  // ── Demo mode (sin validación en BD) ──────────────────────────────────────
+  if (email.toLowerCase().trim() === 'demo@demo' && password === 'Demo$001') {
+    const token = jwt.sign(
+      {
+        userId:      'demo-user',
+        email:       'demo@demo',
+        displayName: 'Demo',
+        isDemo:      true
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
+
+    return json(200, {
+      token,
+      user: {
+        userId:      'demo-user',
+        email:       'demo@demo',
+        displayName: 'Demo',
+        isDemo:      true
+      }
+    });
+  }
+
   try {
     const db = await getDb();
 
