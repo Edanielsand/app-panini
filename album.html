@@ -1591,15 +1591,15 @@
   <!-- ============ ESPECIALES ============ -->
   <section class="tab-content" id="tab-specials">
     <div style="margin-bottom: 30px;">
-      <h3 style="font-family: 'Bebas Neue'; font-size: 24px; margin-bottom: 16px;">🥤 Cartas Coca-Cola</h3>
-      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 16px;">14 cartas exclusivas patrocinadas por Coca-Cola</p>
-      <div class="teams-grid" id="cokeCardsGrid"></div>
+      <h3 style="font-family: 'Bebas Neue'; font-size: 24px; margin-bottom: 16px;">⭐ Cartas Especiales (FWC)</h3>
+      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 16px;">9 cartas de estadios y ciudades donde se juegan los partidos (FWC 00 + FWC 1-8)</p>
+      <div class="teams-grid" id="specialCardsGrid"></div>
     </div>
 
     <div>
-      <h3 style="font-family: 'Bebas Neue'; font-size: 24px; margin-bottom: 16px;">🏟️ Cartas de Ciudades</h3>
-      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 16px;">9 cartas de estadios y ciudades donde se juegan los partidos (FWC 00 + FWC 1-8)</p>
-      <div class="teams-grid" id="cityCardsGrid"></div>
+      <h3 style="font-family: 'Bebas Neue'; font-size: 24px; margin-bottom: 16px;">🥤 Cartas Coca-Cola</h3>
+      <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 16px;">14 cartas exclusivas patrocinadas por Coca-Cola</p>
+      <div class="teams-grid" id="cokeCardsGrid"></div>
     </div>
   </section>
 
@@ -1985,31 +1985,29 @@ const COCACOLA_CARDS = [
 ];
 
 //=============================================================
-// DATOS: CIUDADES (9 tarjetas de estadios/ciudades)
+// DATOS: CARTAS ESPECIALES (9 tarjetas FWC de estadios/ciudades)
 //=============================================================
-const CITY_CARDS = [
-  { code: 'FWC00', name: 'FWC Intro', city: 'FIFA World Cup 2026' },
-  { code: 'FWC1', name: 'FWC 1', city: 'Ciudad' },
-  { code: 'FWC2', name: 'FWC 2', city: 'Ciudad' },
-  { code: 'FWC3', name: 'FWC 3', city: 'Ciudad' },
-  { code: 'FWC4', name: 'FWC 4', city: 'Ciudad' },
-  { code: 'FWC5', name: 'FWC 5', city: 'Ciudad' },
-  { code: 'FWC6', name: 'FWC 6', city: 'Ciudad' },
-  { code: 'FWC7', name: 'FWC 7', city: 'Ciudad' },
-  { code: 'FWC8', name: 'FWC 8', city: 'Ciudad' }
+const SPECIAL_CARDS = [
+  { code: 'FWC00', name: 'FWC 00 - Intro', city: 'FIFA World Cup 2026' },
+  { code: 'FWC1', name: 'FWC 1', city: 'Estadio' },
+  { code: 'FWC2', name: 'FWC 2', city: 'Estadio' },
+  { code: 'FWC3', name: 'FWC 3', city: 'Estadio' },
+  { code: 'FWC4', name: 'FWC 4', city: 'Estadio' },
+  { code: 'FWC5', name: 'FWC 5', city: 'Estadio' },
+  { code: 'FWC6', name: 'FWC 6', city: 'Estadio' },
+  { code: 'FWC7', name: 'FWC 7', city: 'Estadio' },
+  { code: 'FWC8', name: 'FWC 8', city: 'Estadio' }
 ];
 
 // Cada equipo tiene 20 cartas: 1 escudo + 11 jugadores + 1 foto de equipo (plantilla) + 7 jugadores
 // Numeración: 1=Escudo, 2-12=Jugador 1-11, 13=Plantilla, 14-20=Jugador 12-18
 const CARDS_PER_TEAM = 20;
-// Cartas especiales: 9 de Introducción + 11 del FIFA Museum (campeones pasados)
-const SPECIAL_CARDS_COUNT = 20;
+// Cartas especiales: FWC 00 + FWC 1-8 (9 cartas de estadios/ciudades)
+const SPECIAL_CARDS_COUNT = 9;
 // Cartas Coca-Cola (exclusivas)
 const COCACOLA_CARDS_COUNT = 14;
-// Cartas de Ciudades/Estadios (FWC 00 + FWC 1-8)
-const CITY_CARDS_COUNT = 9;
-// Total: 48*20 + 20 (especiales) + 14 (Coca-Cola) + 9 (Ciudades) = 1,003 cartas
-const DEFAULT_TOTAL = TEAMS_DATA.length * CARDS_PER_TEAM + SPECIAL_CARDS_COUNT + COCACOLA_CARDS_COUNT + CITY_CARDS_COUNT;
+// Total: 48*20 + 9 (especiales FWC) + 14 (Coca-Cola) = 1,003 cartas
+const DEFAULT_TOTAL = TEAMS_DATA.length * CARDS_PER_TEAM + SPECIAL_CARDS_COUNT + COCACOLA_CARDS_COUNT;
 
 //=============================================================
 // STATE & STORAGE
@@ -2449,7 +2447,7 @@ function openTeam(code) {
 
   const isSpecial = code === 'SPECIAL';
   const team = isSpecial
-    ? { name: 'Cartas Especiales', flagISO: null, group: '9 Introducción + 11 FIFA Museum' }
+    ? { name: 'Cartas Especiales', flagISO: null, group: 'FWC 00 + FWC 1-8 (Estadios)' }
     : TEAMS_DATA.find(t => t.code === code);
 
   const flagDisplay = isSpecial
@@ -2474,13 +2472,13 @@ function renderStickers() {
     const s = getSticker(code, i);
     const isOwned = s.owned > 0;
     const hasDup = (s.duplicates || 0) > 0;
-    const isLegendary = isSpecial && (i >= 10); // FIFA Museum (campeones del pasado) marcadas como legendarias
+    const isLegendary = false; // No hay cartas legendarias en FWC
 
     let label;
     if (isSpecial) {
-      // 9 cartas de Introducción + 11 del FIFA Museum (campeones pasados)
-      if (i <= 9) label = `Intro ${i}`;
-      else label = `FIFA Museum ${i-9}`;
+      // 9 cartas especiales: FWC 00 + FWC 1-8 (estadios/ciudades)
+      if (i === 1) label = 'FWC 00';
+      else label = `FWC ${i-1}`;
     } else {
       // 20 cartas por equipo: 1 escudo + 11 jugadores + 1 plantilla (foto) + 7 jugadores
       // Numeración: 1=Escudo, 2-12=Jugador 1-11, 13=Plantilla, 14-20=Jugador 12-18
@@ -2619,28 +2617,28 @@ function renderCokeCards() {
   grid.innerHTML = html;
 }
 
-function renderCityCards() {
-  const grid = document.getElementById('cityCardsGrid');
+function renderSpecialCards() {
+  const grid = document.getElementById('specialCardsGrid');
   let html = '';
 
-  CITY_CARDS.forEach(card => {
+  SPECIAL_CARDS.forEach(card => {
     const key = card.code;
     const sticker = state.stickers[key] || { owned: 0, duplicates: 0 };
     const isOwned = sticker.owned > 0;
     const hasDup = (sticker.duplicates || 0) > 0;
 
     html += `
-      <div class="team-card ${isOwned ? 'complete' : ''}" style="background: linear-gradient(135deg, var(--panel) 0%, rgba(0,217,163,.1) 100%); border-color: rgba(0,217,163,.3);">
+      <div class="team-card ${isOwned ? 'complete' : ''}" style="background: linear-gradient(135deg, var(--panel) 0%, rgba(255,212,59,.1) 100%); border-color: rgba(255,212,59,.3);">
         <div class="team-header">
-          <div class="team-code" style="font-weight: 700; color: #00d9a3;">${key}</div>
+          <div class="team-code" style="font-weight: 700; color: #ffd43b;">${key}</div>
           <div class="team-progress">
             <span class="progress-text" style="font-size: 12px; color: var(--text-muted);">${isOwned ? '✓ Obtenida' : 'Faltante'}</span>
           </div>
         </div>
         <div class="team-name">${card.name}</div>
         ${hasDup ? `<div style="font-size: 11px; color: var(--accent-2); margin-top: 6px;">+${sticker.duplicates} repetida${sticker.duplicates > 1 ? 's' : ''}</div>` : ''}
-        <button class="btn btn-sm" style="margin-top: 10px; width: 100%; padding: 6px; font-size: 12px;" onclick="toggleCity('${key}')">${isOwned ? '✓ Marcar' : 'Obtener'}</button>
-        <button class="btn btn-ghost btn-sm" style="margin-top: 4px; width: 100%; padding: 6px; font-size: 12px;" onclick="addDupCity('${key}')">➕ Repetida</button>
+        <button class="btn btn-sm" style="margin-top: 10px; width: 100%; padding: 6px; font-size: 12px;" onclick="toggleSpecial('${key}')">${isOwned ? '✓ Marcar' : 'Obtener'}</button>
+        <button class="btn btn-ghost btn-sm" style="margin-top: 4px; width: 100%; padding: 6px; font-size: 12px;" onclick="addDupSpecial('${key}')">➕ Repetida</button>
       </div>
     `;
   });
@@ -2670,25 +2668,25 @@ function addDupCoke(code) {
   renderDashboard();
 }
 
-function toggleCity(code) {
+function toggleSpecial(code) {
   const s = state.stickers[code] || { owned: 0, duplicates: 0 };
   state.stickers[code] = {
     owned: s.owned > 0 ? 0 : 1,
     duplicates: s.owned > 0 ? 0 : s.duplicates
   };
   saveState();
-  renderCityCards();
+  renderSpecialCards();
   renderDashboard();
 }
 
-function addDupCity(code) {
+function addDupSpecial(code) {
   const s = state.stickers[code] || { owned: 0, duplicates: 0 };
   state.stickers[code] = {
     owned: 1,
     duplicates: (s.duplicates || 0) + 1
   };
   saveState();
-  renderCityCards();
+  renderSpecialCards();
   renderDashboard();
 }
 
@@ -3445,8 +3443,8 @@ function escapeHtml(str) {
 function renderAll() {
   renderDashboard();
   renderAlbum();
+  renderSpecialCards();
   renderCokeCards();
-  renderCityCards();
   renderFinances();
   renderTrades();
   renderStats();
@@ -3476,42 +3474,57 @@ document.getElementById('filterGroup').addEventListener('change', renderAlbum);
 async function init() {
   document.getElementById('purchaseDate').valueAsDate = new Date();
 
-  // 1. Cargar borrador local primero (respuesta inmediata)
-  loadState();
+  // NUEVA LÓGICA: Priorizar nube sobre localStorage
+  // Esto previene que datos vacíos de localStorage sobrescriban datos válidos en MongoDB
+
+  let cloudAlbum = null;
+  let hasCloudData = false;
+
+  // 1. PRIMERO intentar cargar desde la nube
+  try {
+    cloudAlbum = await loadAlbum();
+
+    // Verificar si la nube tiene datos reales (no solo vacíos)
+    if (cloudAlbum && cloudAlbum.stickers && Object.keys(cloudAlbum.stickers).length > 0) {
+      hasCloudData = true;
+      // La nube tiene datos → usarlos directamente
+      state = {
+        ...state,              // mantener defaults
+        ...cloudAlbum,
+        hasUnsavedChanges: false,
+        lastSavedAt: cloudAlbum.updatedAt || cloudAlbum.createdAt || Date.now()
+      };
+      if (!state.settings) state.settings = { totalStickers: DEFAULT_TOTAL, currency: '$', cardsPerPacket: 7, packetPrice: 1 };
+      saveState(true);        // sincronizar borrador local con datos de la nube
+      console.log('[init] Datos cargados desde MongoDB');
+    }
+  } catch (err) {
+    console.warn('[init] No se pudo cargar desde la nube:', err.message);
+  }
+
+  // 2. Si la nube NO tiene datos, cargar localStorage
+  if (!hasCloudData) {
+    loadState();
+    console.log('[init] Usando datos de localStorage (nube vacía)');
+  }
+
   loadSettingsToForm();
   renderAll();
   updateStorageUsage();
 
-  // 2. Luego cargar desde la nube y sobrescribir si hay datos más recientes
-  try {
-    const cloudAlbum = await loadAlbum();
-    if (cloudAlbum) {
-      // Comparar timestamps para decidir cuál es más reciente
-      const cloudTs = cloudAlbum.updatedAt || cloudAlbum.createdAt || 0;
-      const localTs = state.lastSavedAt || state.createdAt || 0;
+  // 3. Si hay datos en la nube y en local, y local es más nuevo, marcar como sin guardar
+  if (hasCloudData && cloudAlbum) {
+    const cloudTs = cloudAlbum.updatedAt || cloudAlbum.createdAt || 0;
+    const localTs = state.lastSavedAt || state.createdAt || 0;
 
-      if (cloudTs >= localTs) {
-        // La nube es más reciente (o igual): usarla como fuente de verdad
-        state = {
-          ...state,              // mantener defaults
-          ...cloudAlbum,
-          hasUnsavedChanges: false,
-          lastSavedAt: cloudTs
-        };
-        if (!state.settings) state.settings = { totalStickers: DEFAULT_TOTAL, currency: '$', cardsPerPacket: 7, packetPrice: 1 };
-        saveState(true);        // sincronizar borrador local con datos de la nube
-        loadSettingsToForm();
-        renderAll();
-      }
-      // Si local es más reciente → hay cambios pendientes (ya marcados como unsaved)
+    if (localTs > cloudTs) {
+      // Local es más reciente → hay cambios pendientes
+      state.hasUnsavedChanges = true;
+      console.log('[init] Detectados cambios no guardados en local');
     }
-  } catch (err) {
-    // Si falla la nube, continuar con el borrador local sin bloquear al usuario
-    console.warn('[init] No se pudo cargar desde la nube:', err.message);
-    showToast('⚠️ Sin conexión a la nube. Usando datos locales.', true);
   }
 
-  // 3. Ocultar loader
+  // 4. Ocultar loader
   const loader = document.getElementById('appLoader');
   loader.classList.add('hidden');
   setTimeout(() => loader.remove(), 500);
@@ -3532,10 +3545,10 @@ window.closeTeamModal   = closeTeamModal;
 window.bulkMark         = bulkMark;
 window.toggleSticker    = toggleSticker;
 window.addDuplicate     = addDuplicate;
+window.toggleSpecial    = toggleSpecial;
+window.addDupSpecial    = addDupSpecial;
 window.toggleCoke       = toggleCoke;
 window.addDupCoke       = addDupCoke;
-window.toggleCity       = toggleCity;
-window.addDupCity       = addDupCity;
 window.addPurchase      = addPurchase;
 window.deleteTransaction = deleteTransaction;
 window.generateTradeList = generateTradeList;
