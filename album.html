@@ -1988,26 +1988,26 @@ const COCACOLA_CARDS = [
 // DATOS: CARTAS ESPECIALES (9 tarjetas FWC de estadios/ciudades)
 //=============================================================
 const SPECIAL_CARDS = [
-  { code: 'FWC00', name: 'FWC 00 - Intro', city: 'FIFA World Cup 2026' },
-  { code: 'FWC1', name: 'FWC 1', city: 'Selección Campeona' },
-  { code: 'FWC2', name: 'FWC 2', city: 'Selección Campeona' },
-  { code: 'FWC3', name: 'FWC 3', city: 'Selección Campeona' },
-  { code: 'FWC4', name: 'FWC 4', city: 'Selección Campeona' },
-  { code: 'FWC5', name: 'FWC 5', city: 'Selección Campeona' },
-  { code: 'FWC6', name: 'FWC 6', city: 'Selección Campeona' },
-  { code: 'FWC7', name: 'FWC 7', city: 'Selección Campeona' },
-  { code: 'FWC8', name: 'FWC 8', city: 'Selección Campeona' },
-  { code: 'FWC9', name: 'FWC 9', city: 'Selección Campeona' },
-  { code: 'FWC10', name: 'FWC 10', city: 'Selección Campeona' },
-  { code: 'FWC11', name: 'FWC 11', city: 'Selección Campeona' },
-  { code: 'FWC12', name: 'FWC 12', city: 'Selección Campeona' },
-  { code: 'FWC13', name: 'FWC 13', city: 'Selección Campeona' },
-  { code: 'FWC14', name: 'FWC 14', city: 'Selección Campeona' },
-  { code: 'FWC15', name: 'FWC 15', city: 'Selección Campeona' },
-  { code: 'FWC16', name: 'FWC 16', city: 'Selección Campeona' },
-  { code: 'FWC17', name: 'FWC 17', city: 'Selección Campeona' },
-  { code: 'FWC18', name: 'FWC 18', city: 'Selección Campeona' },
-  { code: 'FWC19', name: 'FWC 19', city: 'Selección Campeona' }
+  { code: 'FWC00', name: 'FW 00', city: 'FIFA World Cup 2026' },
+  { code: 'FWC1', name: 'FW 01', city: 'Selección Campeona' },
+  { code: 'FWC2', name: 'FW 02', city: 'Selección Campeona' },
+  { code: 'FWC3', name: 'FW 03', city: 'Selección Campeona' },
+  { code: 'FWC4', name: 'FW 04', city: 'Selección Campeona' },
+  { code: 'FWC5', name: 'FW 05', city: 'Selección Campeona' },
+  { code: 'FWC6', name: 'FW 06', city: 'Selección Campeona' },
+  { code: 'FWC7', name: 'FW 07', city: 'Selección Campeona' },
+  { code: 'FWC8', name: 'FW 08', city: 'Selección Campeona' },
+  { code: 'FWC9', name: 'FW 09', city: 'Selección Campeona' },
+  { code: 'FWC10', name: 'FW 10', city: 'Selección Campeona' },
+  { code: 'FWC11', name: 'FW 11', city: 'Selección Campeona' },
+  { code: 'FWC12', name: 'FW 12', city: 'Selección Campeona' },
+  { code: 'FWC13', name: 'FW 13', city: 'Selección Campeona' },
+  { code: 'FWC14', name: 'FW 14', city: 'Selección Campeona' },
+  { code: 'FWC15', name: 'FW 15', city: 'Selección Campeona' },
+  { code: 'FWC16', name: 'FW 16', city: 'Selección Campeona' },
+  { code: 'FWC17', name: 'FW 17', city: 'Selección Campeona' },
+  { code: 'FWC18', name: 'FW 18', city: 'Selección Campeona' },
+  { code: 'FWC19', name: 'FW 19', city: 'Selección Campeona' }
 ];
 
 // Cada equipo tiene 20 cartas: 1 escudo + 11 jugadores + 1 foto de equipo (plantilla) + 7 jugadores
@@ -2597,9 +2597,9 @@ function renderStickers() {
 
     let label;
     if (isSpecial) {
-      // 20 cartas especiales: FWC 00 + FWC 1-19 (selecciones campeonas)
-      if (i === 1) label = 'FWC 00';
-      else label = `FWC ${i-1}`;
+      // 20 cartas especiales: FW 00 + FW 01-19 (selecciones campeonas)
+      if (i === 1) label = 'FW 00';
+      else label = `FW ${String(i-1).padStart(2, '0')}`;
     } else if (isCoke) {
       // 14 cartas Coca-Cola
       label = `Coca-Cola ${i}`;
@@ -3092,22 +3092,32 @@ function renderTrades() {
     });
 
     const sortedGroups = Object.keys(grouped).sort();
-    let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
+    let html = '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">';
 
     sortedGroups.forEach(team => {
-      html += `<div style="border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: rgba(255,255,255,.02);"><div style="font-weight: 600; font-size: 12px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">${team === 'Especial' ? '⭐ ' : team === 'Coca-Cola' ? '🥤 ' : ''}${team}</div><div style="display: flex; flex-wrap: wrap; gap: 6px;">`;
+      const teamData = team === 'Especial' || team === 'Coca-Cola'
+        ? { name: team, flag: team === 'Especial' ? '⭐' : '🥤', iso: null }
+        : TEAMS_DATA.find(t => t.name === team) || { name: team, flagISO: null };
+
+      const flagDisplay = teamData.iso === null && team !== 'Especial' && team !== 'Coca-Cola'
+        ? (teamData.flagISO ? `<span class="fi fi-${teamData.flagISO}" style="font-size: 20px;"></span>` : '')
+        : (team === 'Especial' || team === 'Coca-Cola' ? `<span style="font-size: 20px;">${teamData.flag}</span>` : '');
+
+      html += `<div style="border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: rgba(255,255,255,.02);">`;
+      html += `<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;"><div style="font-size: 20px;">${flagDisplay}</div><div style="font-weight: 600; font-size: 13px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px;">${team}</div></div>`;
+      html += `<div style="display: flex; flex-direction: column; gap: 6px;">`;
+
       grouped[team].forEach(m => {
         const key = m.code === 'CC' ? `CC${m.num}` : `${m.code}-${m.num}`;
         const isSelected = selectedMissingCards.has(key);
-        html += `<label style="display: flex; align-items: center; padding: 6px 8px; background: ${isSelected ? 'var(--accent)' : 'var(--panel)'}; border: 1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}; border-radius: 4px; cursor: pointer; font-size: 12px; user-select: none; transition: all 0.2s;"><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleMissingCard('${key}'); renderTrades();" style="margin-right: 4px; cursor: pointer;"><span style="color: ${isSelected ? 'white' : 'var(--text)'};">${m.code}${m.code === 'CC' || m.code === 'SPECIAL' ? '' : '-'}${m.num}</span></label>`;
+        html += `<label style="display: flex; align-items: center; padding: 6px 8px; background: ${isSelected ? 'var(--accent)' : 'var(--panel)'}; border: 1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}; border-radius: 4px; cursor: pointer; font-size: 12px; user-select: none; transition: all 0.2s;"><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleMissingCard('${key}'); renderTrades();" style="margin-right: 6px; cursor: pointer;"><span style="color: ${isSelected ? 'white' : 'var(--text)'}; flex: 1;">${m.code}${m.code === 'CC' || m.code === 'SPECIAL' ? '' : '-'}${m.num}</span></label>`;
       });
+
       html += '</div></div>';
     });
 
     html += '</div>';
-    if (selectedMissingCards.size > 0) {
-      html += `<div style="margin-top: 16px; display: flex; gap: 8px; border-top: 1px solid var(--border); padding-top: 16px;"><button onclick="saveMissingMarks()" style="flex: 1; padding: 10px 16px; background: linear-gradient(135deg, var(--accent-2), #00b894); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">💾 Guardar ${selectedMissingCards.size} Cambio${selectedMissingCards.size > 1 ? 's' : ''}</button><button onclick="cancelMissingMarks()" style="flex: 1; padding: 10px 16px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">✕ Cancelar</button></div>`;
-    }
+    html += `<div style="display: flex; gap: 8px; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 16px;"><button onclick="saveMissingMarks()" style="flex: 1; padding: 12px 16px; background: linear-gradient(135deg, var(--accent-2), #00b894); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" ${selectedMissingCards.size === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>💾 Guardar ${selectedMissingCards.size} Cambio${selectedMissingCards.size > 1 ? 's' : ''}</button><button onclick="cancelMissingMarks()" style="flex: 1; padding: 12px 16px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--panel-2)'" onmouseout="this.style.background='var(--panel)'">✕ Cancelar</button></div>`;
     missEl.innerHTML = html;
   }
 }
