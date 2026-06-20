@@ -1683,7 +1683,10 @@
     </div>
 
     <div class="trade-section">
-      <h3>🔴 Me Faltan <span class="badge badge-danger" id="missingCount">0</span></h3>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+        <h3 style="margin: 0;">🔴 Me Faltan <span class="badge badge-danger" id="missingCount" style="font-size: 18px; padding: 4px 10px;">0</span></h3>
+        <div style="display: flex; gap: 8px;" id="missingButtonsContainer"></div>
+      </div>
       <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 14px;">
         Cartas que aún no tienes
       </p>
@@ -2619,7 +2622,7 @@ function renderStickers() {
         ${isLegendary ? '<span class="sticker-legendary">★</span>' : ''}
         ${hasDup ? `<span class="sticker-count">+${s.duplicates}</span>` : ''}
         ${isSpecial ? '' : `<div class="sticker-number">${i}</div>`}
-        <div class="sticker-name">${label}</div>
+        <div class="sticker-name" ${isSpecial ? 'style="font-size: 18px; font-weight: 700;"' : ''}>${label}</div>
       </div>
     `;
   }
@@ -3117,8 +3120,18 @@ function renderTrades() {
     });
 
     html += '</div>';
-    html += `<div style="display: flex; gap: 8px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 16px;"><button onclick="saveMissingMarks()" style="width: 140px; padding: 12px 16px; background: linear-gradient(135deg, var(--accent-2), #00b894); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" ${selectedMissingCards.size === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>💾 Guardar</button><button onclick="cancelMissingMarks()" style="width: 140px; padding: 12px 16px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s;" onmouseover="this.style.background='var(--panel-2)'" onmouseout="this.style.background='var(--panel)'">✕ Cancelar</button></div>`;
     missEl.innerHTML = html;
+
+    // Renderizar botones en el encabezado
+    const buttonsContainer = document.getElementById('missingButtonsContainer');
+    if (missing.length > 0) {
+      buttonsContainer.innerHTML = `
+        <button onclick="saveMissingMarks()" style="padding: 8px 14px; background: linear-gradient(135deg, var(--accent-2), #00b894); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" ${selectedMissingCards.size === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>💾 Guardar</button>
+        <button onclick="cancelMissingMarks()" style="padding: 8px 14px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.2s;" onmouseover="this.style.background='var(--panel-2)'" onmouseout="this.style.background='var(--panel)'">✕ Cancelar</button>
+      `;
+    } else {
+      buttonsContainer.innerHTML = '';
+    }
   }
 }
 
